@@ -19,9 +19,14 @@ class TgbotConnection:
             try:
                 response = requests.get(self.apiurl(reqname),
                     params=params, timeout=self.REQUEST_TIMEOUT)
-            except Exception as e:
-                print("Exception: " + e)
-
+            except requests.exceptions.ConnectionError as ex:
+                print('Connection error ({}) for  {} (try #{}), params: {}'.format(
+                    ex, reqname, retries, params))
+                continue
+            except requests.exceptions.Timeout:
+                print('Timed out {} (try #{}), params: {}'.format(
+                    reqname, retries, params))
+                continue
             response.encoding = 'utf-8'
             try:
                 json = response.json()

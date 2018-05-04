@@ -46,7 +46,7 @@ class GoogleImageBot:
         try:
             msg = update['message']
         except Exception as e:
-            print("Exception: " + e)
+            print("Exception: " + str(e))
         else:
             self.handleMessage(msg)
         self.update_offset = upid + 1
