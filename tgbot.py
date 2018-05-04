@@ -24,8 +24,6 @@ class TgbotConnection:
                     ex, reqname, retries, params))
                 continue
             except requests.exceptions.Timeout:
-                print('Timed out {} (try #{}), params: {}'.format(
-                    reqname, retries, params))
                 continue
             response.encoding = 'utf-8'
             try:
