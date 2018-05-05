@@ -30,18 +30,18 @@ def webhook_handler():
             try:
                 url = get_image_url(text, idx)
                 filename = "out" + str(randint(0, 10000000000000000)) + ".jpg"
-                f = open(filename,'wb')
+                f = open("images/" + filename, 'wb')
                 f.write(urllib2.urlopen(url).read())
                 f.close()
                 flag = False
-            except:
+            except urllib2.HTTPError:
                 idx += 1
 
         #Send image and remove saved file
         img = open(filename, 'rb')
         bot.sendPhoto(chat_id=chat_id, photo=img)
         img.close()
-        os.remove(filename)
+        os.remove("images/" + filename)
     return 'ok'
 
 @app.route('/set_webhook', methods=['GET', 'POST'])
