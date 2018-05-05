@@ -24,11 +24,18 @@ def webhook_handler():
         text = update.message.text.encode('utf-8')
 
         #Get image and save in file
-        url = get_image_url(text)
-        filename = "out" + str(randint(0, 10000000000000000)) + ".jpg"
-        f = open(filename,'wb')
-        f.write(urllib2.urlopen(url).read())
-        f.close()
+        flag = True
+        idx = 0
+        while flag:
+            try:
+                url = get_image_url(text, idx)
+                filename = "out" + str(randint(0, 10000000000000000)) + ".jpg"
+                f = open(filename,'wb')
+                f.write(urllib2.urlopen(url).read())
+                f.close()
+                flag = False
+            except:
+                idx += 1
 
         #Send image and remove saved file
         img = open(filename, 'rb')
@@ -50,7 +57,7 @@ def index():
     return 'Hello World!'
 
 
-def get_image_url(search_term):
+def get_image_url(search_term, idx):
     try:
         key = os.environ["G_KEY"]
         cx = os.environ["G_CX"]
@@ -60,7 +67,7 @@ def get_image_url(search_term):
         url = "https://www.googleapis.com/customsearch/v1?q=" + search_term + "&key=" + key + "&cx=" + cx + "&searchType=" + searchType + "&gl=" + gl
         contents = urllib2.urlopen(url).read()
         j = json.loads(contents)
-        return j["items"][0]["link"]
+        return j["items"][idx]["link"]
     except Exception as e:
         print("Exception: " + str(e))
 
