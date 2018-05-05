@@ -6,6 +6,7 @@ import urllib2
 import json
 import telegram
 from flask import Flask, request
+from random import randint
 
 
 app = Flask(__name__)
@@ -16,17 +17,24 @@ bot = telegram.Bot(token=os.environ["TOKEN"])
 @app.route('/asd123jaa', methods=['POST'])
 def webhook_handler():
     if request.method == "POST":
-        # retrieve the message in JSON and then transform it to Telegram object
         update = telegram.Update.de_json(request.get_json(force=True), bot)
 
         chat_id = update.message.chat.id
 
-        # Telegram understands UTF-8, so encode text for unicode compatibility
         text = update.message.text.encode('utf-8')
 
-        # repeat the same message back (echo)
-        bot.sendMessage(chat_id=chat_id, text=get_image_url(text))
+        #Get image and save in file
+        url = get_image_url(text)
+        filename = "out" + str(randint(0, 10000000000000000)) + ".jpg"
+        f = open(filename,'wb')
+        f.write(urllib2.urlopen(url).read())
+        f.close()
 
+        #Send image and remove saved file
+        img = open(filename, 'rb')
+        bot.sendPhoto(chat_id=chat_id, photo=img)
+        img.close()
+        os.remove(filename)
     return 'ok'
 
 @app.route('/set_webhook', methods=['GET', 'POST'])
