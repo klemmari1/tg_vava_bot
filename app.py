@@ -14,7 +14,7 @@ app = Flask(__name__)
 global bot
 bot = telegram.Bot(token=os.environ["TOKEN"])
 
-@app.route('/asd123jaa', methods=['POST'])
+@app.route('/' + os.environ["HOOK"], methods=['POST'])
 def webhook_handler():
     if request.method == "POST":
         update = telegram.Update.de_json(request.get_json(force=True), bot)
@@ -35,7 +35,7 @@ def webhook_handler():
 
 @app.route('/set_webhook', methods=['GET', 'POST'])
 def set_webhook():
-    s = bot.setWebhook('https://vavabot.herokuapp.com/asd123jaa')
+    s = bot.setWebhook('https://vavabot.herokuapp.com/' + os.environ["HOOK"])
     if s:
         return "webhook setup ok"
     else:
