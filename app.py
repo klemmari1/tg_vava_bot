@@ -49,7 +49,7 @@ def get_image_url(search_term):
         searchType = "image"
         googlehost = "google.fi"
         search_term = search_term.replace(" ", "+")
-        url = "https://www.googleapis.com/customsearch/v1?q=" + search_term + "&key=" + key + "&cx=" + cx + "&searchType=" + searchType "&googlehost=" + googlehost
+        url = "https://www.googleapis.com/customsearch/v1?q=" + search_term + "&key=" + key + "&cx=" + cx + "&searchType=" + searchType + "&googlehost=" + googlehost
         contents = urllib2.urlopen(url).read()
         j = json.loads(contents)
         return j["items"][0]["link"]
