@@ -46,7 +46,7 @@ def handleMessage(msg):
             cmdname = text
             args = ''
         if cmdname in commands:
-            commands[cmdname](args, msg['chat'])
+            commands[cmdname](args, msg['chat']['id'])
 
 def cmdImg(query, chat_id):
     #Get image and save in file
