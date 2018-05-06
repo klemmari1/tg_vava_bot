@@ -40,7 +40,10 @@ def handleMessage(msg):
             '/img': cmdImg
         }
         try:
-            cmdname, args = text.split(' ', 1)
+            if '/img' in text:
+                cmdname = '/img'
+                args = text.split('/img')
+                args = args.split(' ')
         except ValueError:
             cmdname = text
             args = ''
