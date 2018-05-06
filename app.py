@@ -17,7 +17,6 @@ bot = tgbot.TgbotConnection(os.environ["TOKEN"])
 def webhook_handler():
     if request.method == "POST":
         message = request.get_json(force=True)
-        print("msg " + str(message))
         message = message['message']
         handleMessage(message)
     return 'ok'
@@ -36,10 +35,8 @@ def index():
 
 
 def handleMessage(msg):
-    print("msg2 " + str(msg))
     if 'text' in msg:
         text = msg['text']
-        print("text" + text)
         commands = {
             '/img': cmdImg
         }
@@ -47,16 +44,16 @@ def handleMessage(msg):
             if '/img ' in text:
                 cmdname = '/img'
                 args = text.split('/img ')[1]
-                print("args" + args)
         except ValueError:
             cmdname = text
             args = ''
         if cmdname in commands and args:
+            print("args: " + str(args))
+            print("chat id: " + str(msg['chat']['id']))
             commands[cmdname](args, msg['chat']['id'])
 
 def cmdImg(query, chat_id):
     url = get_image_url(query)
-    print('url ' + url)
     #Send image if found
     if(url != None):
         bot.sendPhoto(chat_id=chat_id, photo=url)
