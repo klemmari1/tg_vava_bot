@@ -55,7 +55,10 @@ def handleMessage(msg):
 def cmdImg(query, chat_id):
     url = get_image_url(query)
     #Send image if found
-    if(url != None):
+    if(url == -1):
+        #TODO send message about quota filled
+        pass
+    elif(url != None):
         bot.sendPhoto(chat_id=chat_id, photo=url)
 
 def get_image_url(search_term):
@@ -72,6 +75,10 @@ def get_image_url(search_term):
         if("items" in j):
             return j["items"][0]["link"]
         return None
+    except urllib2.HTTPError as e:
+        print(e.fp.read())
+        if("billing" in e.fp.read()):
+            return -1
     except Exception as e:
         print("Exception: " + str(e))
 
