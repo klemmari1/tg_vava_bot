@@ -23,7 +23,7 @@ def webhook_handler():
 
 @app.route('/set_webhook', methods=['GET', 'POST'])
 def set_webhook():
-    s = bot.setWebhook('https://vavabot.herokuapp.com/' + os.environ["HOOK"])
+    s = bot.setWebhook(os.environ["URL"] + os.environ["HOOK"])
     if s:
         return "webhook setup ok"
     else:
