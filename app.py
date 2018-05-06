@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- encoding: utf8 -*-
 
 import os
@@ -49,6 +48,7 @@ def cmdImg(query, chat_id):
     #Get image and save in file
     flag = True
     idx = 0
+    #Loop finding an image that does not give 403 Forbidden error
     while flag:
         try:
             url = get_image_url(query, idx)
@@ -61,7 +61,7 @@ def cmdImg(query, chat_id):
             flag = False
         except urllib2.HTTPError:
             idx += 1
-
+            
     if(flag == False):
         #Send image and remove saved file
         img = open(filename, 'rb')
@@ -70,6 +70,7 @@ def cmdImg(query, chat_id):
         os.remove(filename)
 
 def get_image_url(search_term, idx):
+    #Use Google Custom Search API to find an image
     try:
         key = os.environ["G_KEY"]
         cx = os.environ["G_CX"]
@@ -79,7 +80,10 @@ def get_image_url(search_term, idx):
         url = "https://www.googleapis.com/customsearch/v1?q=" + search_term + "&key=" + key + "&cx=" + cx + "&searchType=" + searchType + "&gl=" + gl
         contents = urllib2.urlopen(url).read()
         j = json.loads(contents)
-        return j["items"][idx]["link"]
+        if("items" in j):
+            if(len(j["items"]) > idx):
+                return j["items"][idx]["link"]
+        return None
     except Exception as e:
         print("Exception: " + str(e))
 
