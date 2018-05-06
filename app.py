@@ -18,6 +18,7 @@ def webhook_handler():
     if request.method == "POST":
         message = request.get_json(force=True)
         print("msg " + str(message))
+        message = message['message']
         handleMessage(message)
     return 'ok'
 
