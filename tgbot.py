@@ -31,7 +31,7 @@ class TgbotConnection:
                 json = response.json
             except ValueError:
                 json = response.json
-            return json['result']
+            return json
 
     def getMe(self):
         return self.makeRequest('getMe')
