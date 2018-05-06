@@ -40,14 +40,13 @@ def handleMessage(msg):
             '/img': cmdImg
         }
         try:
-            if '/img' in text:
+            if '/img ' in text:
                 cmdname = '/img'
-                args = text.split('/img')
-                args = args.split(' ')
+                args = text.split('/img ')[1]
         except ValueError:
             cmdname = text
             args = ''
-        if cmdname in commands:
+        if cmdname in commands and args:
             commands[cmdname](args, msg['chat']['id'])
 
 def cmdImg(query, chat_id):
