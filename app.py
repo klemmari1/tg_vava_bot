@@ -45,31 +45,12 @@ def index():
     return 'Hello World!'
 
 def cmdImg(query, chat_id):
-    #Get image and save in file
-    flag = True
-    idx = 0
-    #Loop finding an image that does not give 403 Forbidden error
-    while flag:
-        try:
-            url = get_image_url(query, idx)
-            if(url == None):
-                break
-            filename = "out" + str(randint(0, 10000000000000000)) + ".jpg"
-            f = open(filename, 'wb')
-            f.write(urllib2.urlopen(url).read())
-            f.close()
-            flag = False
-        except urllib2.HTTPError:
-            idx += 1
-            
-    if(flag == False):
-        #Send image and remove saved file
-        img = open(filename, 'rb')
-        bot.sendPhoto(chat_id=chat_id, photo=img)
-        img.close()
-        os.remove(filename)
+    url = get_image_url(query)
+    #Send image if found
+    if(url != None):
+        bot.sendPhoto(chat_id=chat_id, photo=url)
 
-def get_image_url(search_term, idx):
+def get_image_url(search_term):
     #Use Google Custom Search API to find an image
     try:
         key = os.environ["G_KEY"]
@@ -81,8 +62,7 @@ def get_image_url(search_term, idx):
         contents = urllib2.urlopen(url).read()
         j = json.loads(contents)
         if("items" in j):
-            if(len(j["items"]) > idx):
-                return j["items"][idx]["link"]
+            return j["items"][0]["link"]
         return None
     except Exception as e:
         print("Exception: " + str(e))
