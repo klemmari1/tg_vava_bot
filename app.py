@@ -16,9 +16,8 @@ bot = tgbot.TgbotConnection(os.environ["TOKEN"])
 @app.route('/' + os.environ["HOOK"], methods=['POST'])
 def webhook_handler():
     if request.method == "POST":
-        update = request.get_json(force=True)
-        msg = update['message']
-        handleMessage(msg)
+        message = request.get_json(force=True)
+        handleMessage(message)
     return 'ok'
 
 @app.route('/set_webhook', methods=['GET', 'POST'])
@@ -70,7 +69,6 @@ def get_image_url(search_term):
         return None
     except Exception as e:
         print("Exception: " + str(e))
-
 
 
 if __name__ == '__main__':
