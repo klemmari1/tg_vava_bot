@@ -52,6 +52,8 @@ def cmdImg(query, chat_id):
     while flag:
         try:
             url = get_image_url(query, idx)
+            if(url == None):
+                break
             filename = "out" + str(randint(0, 10000000000000000)) + ".jpg"
             f = open(filename, 'wb')
             f.write(urllib2.urlopen(url).read())
@@ -60,11 +62,12 @@ def cmdImg(query, chat_id):
         except urllib2.HTTPError:
             idx += 1
 
-    #Send image and remove saved file
-    img = open(filename, 'rb')
-    bot.sendPhoto(chat_id=chat_id, photo=img)
-    img.close()
-    os.remove(filename)
+    if(flag == False):
+        #Send image and remove saved file
+        img = open(filename, 'rb')
+        bot.sendPhoto(chat_id=chat_id, photo=img)
+        img.close()
+        os.remove(filename)
 
 def get_image_url(search_term, idx):
     try:
