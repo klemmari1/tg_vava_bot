@@ -89,7 +89,7 @@ def cmdImg(query, chat_id):
     while True:
         url = items[idx]["link"]
         response = bot.sendPhoto(chat_id=chat_id, photo=url)
-        if (isinstance(response, Exception)):
+        if (response.status_code == 400):
             print(str(response))
             idx += 1
         else:
