@@ -76,17 +76,18 @@ def handleMessage(msg):
             commands[cmdname](args, msg['chat']['id'])
 
 def cmdImg(query, chat_id):
-    #Search for image with the query
-    url = get_image_url(query)
+    #Get results with query
+    items = get_image_url(query)
     #TODO check daily search quota
-    if(url == -1):
+    if(items == -1):
         #Send image about daily limit reached
         dailyLimit(query, chat_id)
-    elif(url != None):
-        #If image found
-        bot.sendPhoto(chat_id=chat_id, photo=url)
-    elif(url == None):
+    elif(items == None):
+        #Send image about image not found
         notFound(query, chat_id)
+    url = items[0]["link"]
+    response = bot.sendPhoto(chat_id=chat_id, photo=url)
+    print(str(response))
 
 def testImg(query, chat_id):
     if query == "1":
@@ -112,7 +113,7 @@ def get_image_url(search_term):
         contents = urllib2.urlopen(url).read()
         j = json.loads(contents)
         if("items" in j):
-            return j["items"][0]["link"]
+            return j["items"]
         return None
     except urllib2.HTTPError as e:
         json_err = e.fp.read()
