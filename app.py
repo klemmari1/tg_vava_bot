@@ -82,7 +82,7 @@ def cmdImg(query, chat_id):
     url = get_image_url(query)
     if(url == -1):
         #Send image about daily limit reached
-        testImg(query, chat_id)
+        dailyLimit(query, chat_id)
     elif(url != None):
         #If image found
         bot.sendPhoto(chat_id=chat_id, photo=url)
@@ -90,12 +90,16 @@ def cmdImg(query, chat_id):
         notFound(query, chat_id)
 
 def testImg(query, chat_id):
-    reply = bot.sendPhoto(chat_id=chat_id, photo=random.choice(error_images), caption="You done reached my daily search limit again :(")
-    print(str(reply))
+    if query == "1":
+        print(dailyLimit(query, chat_id))
+    elif query == "2":
+        print(notFound(query, chat_id))
+
+def dailyLimit(query, chat_id):
+    return bot.sendPhoto(chat_id=chat_id, photo=random.choice(error_images), caption="You done reached my daily search limit again :(")
 
 def notFound(query, chat_id):
-    reply = bot.sendPhoto(chat_id=chat_id, photo=random.choice(not_found_images), caption=random.choice(not_found_captions))
-    print(str(reply))
+    return bot.sendPhoto(chat_id=chat_id, photo=random.choice(not_found_images), caption=random.choice(not_found_captions))
 
 def get_image_url(search_term):
     #Use Google Custom Search API to find an image
