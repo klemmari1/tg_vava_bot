@@ -13,11 +13,11 @@ app = Flask(__name__)
 global bot
 bot = tgbot.TgbotConnection(os.environ["TOKEN"])
 
-error_images = {"https://cdnb.artstation.com/p/assets/images/images/001/993/973/large/benjamin-eberhard-sad-robot.jpg?1455679192",
+error_images = ["https://cdnb.artstation.com/p/assets/images/images/001/993/973/large/benjamin-eberhard-sad-robot.jpg?1455679192",
                 "http://img03.deviantart.net/43d5/i/2016/063/8/4/detective_sad_robot_by_spikesthecat-d9tv8se.png",
                 "https://c1.staticflickr.com/3/2735/4262821422_b9b5a523c6.jpg",
                 "https://musewb.files.wordpress.com/2012/10/5152157159_5ba65100a9_z.jpg"
-                "https://fsmedia.imgix.net/83/3a/80/8b/8f3c/427e/aac2/99891d289d7c/the-robot-sophia-makes-an-angry-face-during-an-on-stage-interview.png?auto=format%2Ccompress&w=700"}
+                "https://fsmedia.imgix.net/83/3a/80/8b/8f3c/427e/aac2/99891d289d7c/the-robot-sophia-makes-an-angry-face-during-an-on-stage-interview.png?auto=format%2Ccompress&w=700"]
 
 @app.route('/' + os.environ["HOOK"], methods=['POST'])
 def webhook_handler():
