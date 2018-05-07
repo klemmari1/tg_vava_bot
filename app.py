@@ -63,7 +63,7 @@ def cmdImg(query, chat_id):
         #Send image about daily limit reached
         num = randint(0, 5)
         filename = "images/" + str(num) + ".jpg"
-        bot.sendPhoto(chat_id=chat_id, photo=open(filename, 'rb'), caption="You done up reached my daily search limit again :(")
+        bot.sendPhoto(chat_id=chat_id, photo=open(filename, 'rb'), caption="Daily search limit reached :(")
     elif(url != None):
         #If image found
         bot.sendPhoto(chat_id=chat_id, photo=url)
@@ -71,7 +71,7 @@ def cmdImg(query, chat_id):
 def testImg(query, chat_id):
     num = randint(0, 5)
     filename = "images/" + str(num) + ".jpg"
-    reply = bot.sendPhoto(chat_id=chat_id, photo=open(filename, 'rb'), caption="You done up reached my daily search limit again :(")
+    reply = bot.sendPhoto(chat_id=chat_id, photo=open(filename, 'rb'), caption="Daily search limit reached :(")
     print(str(reply))
 
 def get_image_url(search_term):
