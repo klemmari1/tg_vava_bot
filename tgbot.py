@@ -27,8 +27,8 @@ class TgbotConnection:
             response.encoding = 'utf-8'
             return response
 
-    def sendPhoto(self, chat_id, photo):
-        return self.makeRequest('sendPhoto', chat_id=chat_id, photo=photo)
+    def sendPhoto(self, chat_id, photo, caption=None):
+        return self.makeRequest('sendPhoto', chat_id=chat_id, photo=photo, caption=caption)
 
     def setWebhook(self, url):
         return self.makeRequest('setWebhook', url=url)

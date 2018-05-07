@@ -38,28 +38,42 @@ def handleMessage(msg):
     if 'text' in msg:
         text = msg['text']
         commands = {
-            '/img': cmdImg
+            '/img': cmdImg,
+            '/vtest': testImg
         }
         try:
             if '/img ' in text:
                 cmdname = '/img'
                 args = text.split('/img ')[1]
+            else:
+                cmdname, args = text.split(' ', 1)
         except ValueError:
             cmdname = text
             args = ''
-        if cmdname in commands and args:
+        if cmdname in commands:
+            print("command: " + str(cmdname))
             print("args: " + str(args))
             print("chat id: " + str(msg['chat']['id']))
             commands[cmdname](args, msg['chat']['id'])
 
 def cmdImg(query, chat_id):
+    #Search for image with the query
     url = get_image_url(query)
-    #Send image if found
     if(url == -1):
-        #TODO send message about quota filled
-        pass
+        #Send image about daily limit reached
+        num = randint(0, 5)
+        filename = "images/" + str(num) + ".jpg"
+        with open(filename) as f:
+            bot.sendPhoto(chat_id=chat_id, photo=f, caption="You done up reached my daily search limit again :(")
     elif(url != None):
+        #If image found
         bot.sendPhoto(chat_id=chat_id, photo=url)
+
+def testImg(query, chat_id):
+    num = randint(0, 5)
+    filename = "images/" + str(num) + ".jpg"
+    with open(filename) as f:
+        bot.sendPhoto(chat_id=chat_id, photo=f, caption="You done up reached my daily search limit again :(")
 
 def get_image_url(search_term):
     #Use Google Custom Search API to find an image
@@ -76,9 +90,12 @@ def get_image_url(search_term):
             return j["items"][0]["link"]
         return None
     except urllib2.HTTPError as e:
-        print(e.fp.read())
-        if("billing" in e.fp.read()):
-            return -1
+        json_err = e.fp.read()
+        print(json_err)
+        if("error" in json_err):
+            if("message" in json_err["error"]):
+                if("billing" in json_err["error"]["message"]):
+                    return -1
     except Exception as e:
         print("Exception: " + str(e))
 
