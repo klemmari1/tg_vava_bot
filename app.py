@@ -44,7 +44,8 @@ def webhook_handler():
 
 @app.route('/set_webhook', methods=['GET', 'POST'])
 def set_webhook():
-    s = bot.setWebhook(os.environ["URL"] + os.environ["HOOK"])
+    print("Host URL: " + request.host_url)
+    s = bot.setWebhook(request.host_url + os.environ["HOOK"])
     if s:
         return "webhook setup ok"
     else:
