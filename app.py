@@ -99,6 +99,7 @@ def cmdImg(query, chat_id):
             break
 
 def cmdPuppu(query, chat_id):
+    query = query.replace(" ", "+")
     response = urllib2.urlopen("http://puppulausegeneraattori.fi/?avainsana=" + query).read()
     soup=BeautifulSoup(response, "html5lib")
     text=soup.find('p', {"class": "lause"})
