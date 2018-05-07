@@ -39,7 +39,6 @@ def webhook_handler():
     if request.method == "POST":
         message = request.get_json(force=True)
         message = message['message']
-        message.encoding = 'utf-8'
         handleMessage(message)
     return 'ok'
 
@@ -59,6 +58,7 @@ def index():
 def handleMessage(msg):
     if 'text' in msg:
         text = msg['text']
+        text = text.encode('utf-8')
         commands = {
             '/img': cmdImg,
             '/vtest': testImg
