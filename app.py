@@ -101,10 +101,9 @@ def cmdImg(query, chat_id):
 def cmdPuppu(query, chat_id):
     response = urllib2.urlopen("http://puppulausegeneraattori.fi/?avainsana=" + query).read()
     soup=BeautifulSoup(response, "html5lib")
-    text=soup.findAll('p', {"class": "lause"})
-    print(text)
-    print(text.contents)
-    bot.sendMessage(chat_id=chat_id, text=text.contents)
+    text=soup.find('p', {"class": "lause"})
+    print(text.contents[0])
+    bot.sendMessage(chat_id=chat_id, text=text.contents[0])
 
 def testImg(query, chat_id):
     if query == "1":
