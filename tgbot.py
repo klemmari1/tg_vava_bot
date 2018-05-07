@@ -27,6 +27,9 @@ class TgbotConnection:
             response.encoding = 'utf-8'
             return response
 
+    def sendMessage(self, chat_id, text):
+        return self.makeRequest('sendMessage', chat_id=chat_id, text=text)
+
     def sendPhoto(self, chat_id, photo, caption=None):
         return self.makeRequest('sendPhoto', chat_id=chat_id, photo=photo, caption=caption)
 

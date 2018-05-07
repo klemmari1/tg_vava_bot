@@ -6,6 +6,7 @@ import json
 import tgbot
 import random
 from flask import Flask, request
+from bs4 import BeautifulSoup
 
 
 app = Flask(__name__)
@@ -62,6 +63,7 @@ def handleMessage(msg):
         text = text.encode('utf-8')
         commands = {
             '/img': cmdImg,
+            '/puppu': cmdPuppu,
             '/vtest': testImg
         }
         try:
@@ -95,6 +97,14 @@ def cmdImg(query, chat_id):
             idx += 1
         else:
             break
+
+def cmdPuppu(query, chat_id):
+    response = urllib2.urlopen("http://puppulausegeneraattori.fi/?avainsana=" + query).read()
+    soup=BeautifulSoup(response, "html5lib")
+    text=soup.findAll('p', {"class": "lause"})
+    print(text)
+    print(text.contents)
+    bot.sendMessage(chat_id=chat_id, text=text.contents)
 
 def testImg(query, chat_id):
     if query == "1":
