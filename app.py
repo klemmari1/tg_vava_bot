@@ -10,7 +10,6 @@ from flask import Flask, request
 
 app = Flask(__name__)
 
-global bot
 bot = tgbot.TgbotConnection(os.environ["TOKEN"])
 
 error_images = ["https://cdnb.artstation.com/p/assets/images/images/001/993/973/large/benjamin-eberhard-sad-robot.jpg?1455679192",
@@ -18,6 +17,22 @@ error_images = ["https://cdnb.artstation.com/p/assets/images/images/001/993/973/
                 "https://c1.staticflickr.com/3/2735/4262821422_b9b5a523c6.jpg",
                 "https://musewb.files.wordpress.com/2012/10/5152157159_5ba65100a9_z.jpg"
                 "https://fsmedia.imgix.net/83/3a/80/8b/8f3c/427e/aac2/99891d289d7c/the-robot-sophia-makes-an-angry-face-during-an-on-stage-interview.png?auto=format%2Ccompress&w=700"]
+
+not_found_images = ["http://cdn.funnyand.com/wp-content/uploads/2014/03/404-PagenotfoundLOL_20140325-300x300.jpg",
+                    "http://www.profitguide.com/wp-content/uploads/2013/09/google-not-found.jpg",
+                    "https://i.imgflip.com/11fjj7.jpg",
+                    "https://sd.keepcalm-o-matic.co.uk/i/error-404-meme-not-found.png"]
+
+not_found_captions = ["You're a special snowflake, aren't you? No image found!",
+                      "No image found!",
+                      "Sry, no image",
+                      "Cannot find images with this query!",
+                      "Googl does not hav dis",
+                      "No images with this query!",
+                      "Where image? Not in internet",
+                      "Hmm.. Cannot find this",
+                      "Not found on google.. Maybe you can put it there?",
+                      "Too weird query. Cannot find"]
 
 @app.route('/' + os.environ["HOOK"], methods=['POST'])
 def webhook_handler():
@@ -71,9 +86,15 @@ def cmdImg(query, chat_id):
     elif(url != None):
         #If image found
         bot.sendPhoto(chat_id=chat_id, photo=url)
+    elif(url == None):
+        notFound(query, chat_id)
 
 def testImg(query, chat_id):
     reply = bot.sendPhoto(chat_id=chat_id, photo=random.choice(error_images), caption="You done reached my daily search limit again :(")
+    print(str(reply))
+
+def notFound(query, chat_id):
+    reply = bot.sendPhoto(chat_id=chat_id, photo=random.choice(not_found_images), caption=random.choice(not_found_captions))
     print(str(reply))
 
 def get_image_url(search_term):
@@ -99,6 +120,7 @@ def get_image_url(search_term):
                     return -1
     except Exception as e:
         print("Exception: " + str(e))
+        return -2
 
 
 if __name__ == '__main__':
