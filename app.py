@@ -63,11 +63,7 @@ def handleMessage(msg):
             '/vtest': testImg
         }
         try:
-            if '/img ' in text:
-                cmdname = '/img'
-                args = text.split('/img ')[1]
-            else:
-                cmdname, args = text.split(' ', 1)
+            cmdname, args = text.split(' ', 1)
         except ValueError:
             cmdname = text
             args = ''
@@ -80,6 +76,7 @@ def handleMessage(msg):
 def cmdImg(query, chat_id):
     #Search for image with the query
     url = get_image_url(query)
+    #TODO check daily search quota
     if(url == -1):
         #Send image about daily limit reached
         dailyLimit(query, chat_id)
