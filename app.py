@@ -85,9 +85,15 @@ def cmdImg(query, chat_id):
     elif(items == None):
         #Send image about image not found
         notFound(query, chat_id)
-    url = items[0]["link"]
-    response = bot.sendPhoto(chat_id=chat_id, photo=url)
-    print(str(response))
+    idx = 0
+    while True:
+        url = items[idx]["link"]
+        response = bot.sendPhoto(chat_id=chat_id, photo=url)
+        if (isinstance(response, Exception)):
+            print(str(response))
+            idx += 1
+        else:
+            break
 
 def testImg(query, chat_id):
     if query == "1":
