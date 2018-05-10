@@ -100,6 +100,10 @@ def cmdImg(query, chat_id):
 
 def cmdPuppu(query, chat_id):
     query = query.replace(" ", "+")
+    query = query.replace('ä', '%E4')
+    query = query.replace('ö', '%F6')
+    query = query.replace('Ä', '%C4')
+    query = query.replace('Ö', '%D6')
     response = urllib2.urlopen("http://puppulausegeneraattori.fi/?avainsana=" + query).read()
     soup=BeautifulSoup(response, "html5lib")
     text=soup.find('p', {"class": "lause"})
