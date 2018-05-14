@@ -1,7 +1,7 @@
 # -*- encoding: utf8 -*-
 
 import os
-import urllib2
+import urllib
 import json
 import tgbot
 import random
@@ -60,7 +60,6 @@ def index():
 def handleMessage(msg):
     if 'text' in msg:
         text = msg['text']
-        text = text.encode('utf-8')
         commands = {
             '/img': cmdImg,
             '/puppu': cmdPuppu,
@@ -99,16 +98,12 @@ def cmdImg(query, chat_id):
             break
 
 def cmdPuppu(query, chat_id):
-    query = query.replace(" ", "+")
-    query = query.replace('ä', '%E4')
-    query = query.replace('ö', '%F6')
-    query = query.replace('Ä', '%C4')
-    query = query.replace('Ö', '%D6')
-    response = urllib2.urlopen("http://puppulausegeneraattori.fi/?avainsana=" + query).read()
+    query = urllib.parse.quote_plus(query, safe='', encoding='latin-1', errors=None)
+    url = "http://puppulausegeneraattori.fi/?avainsana=" + query
+    response = urllib.request.urlopen(url).read()
     soup=BeautifulSoup(response, "html5lib")
     text=soup.find('p', {"class": "lause"})
     text = text.contents[0]
-    text = text.encode('utf-8')
     print(text)
     bot.sendMessage(chat_id=chat_id, text=text)
 
@@ -133,12 +128,12 @@ def get_image_url(search_term):
         gl = "fi"
         search_term = search_term.replace(" ", "+")
         url = "https://www.googleapis.com/customsearch/v1?q=" + search_term + "&key=" + key + "&cx=" + cx + "&searchType=" + searchType + "&gl=" + gl
-        contents = urllib2.urlopen(url).read()
+        contents = urllib.request.urlopen(url).read()
         j = json.loads(contents)
         if("items" in j):
             return j["items"]
         return None
-    except urllib2.HTTPError as e:
+    except urllib.error.HTTPError as e:
         json_err = e.fp.read()
         print(json_err)
         if("error" in json_err):
