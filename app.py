@@ -128,7 +128,7 @@ def get_image_url(search_terms):
         cx = os.environ["G_CX"]
         searchType = "image"
         gl = "fi"
-        search_terms = urllib.parse.quote_plus(search_terms, safe='', encoding='latin-1', errors=None)
+        search_terms = urllib.parse.quote(search_terms, safe='', encoding='latin-1', errors=None)
         url = "https://www.googleapis.com/customsearch/v1?q=" + search_terms + "&key=" + key + "&cx=" + cx + "&searchType=" + searchType + "&gl=" + gl
         contents = urllib.request.urlopen(url).read()
         j = json.loads(contents)
