@@ -84,6 +84,8 @@ def cmdImg(query, chat_id):
     if(items == -1):
         #Send image about daily limit reached
         dailyLimit(query, chat_id)
+    elif(items == -2):
+        return
     elif(items == None):
         #Send image about image not found
         notFound(query, chat_id)
