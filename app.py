@@ -83,6 +83,8 @@ def cmdImg(query, chat_id):
     if(items == -1):
         #Send image about daily limit reached
         dailyLimit(query, chat_id)
+    elif(items == -2):
+        return
     elif(items == None):
         #Send image about image not found
         notFound(query, chat_id)
@@ -128,6 +130,7 @@ def get_image_url(search_term):
         gl = "fi"
         search_term = search_term.replace(" ", "+")
         url = "https://www.googleapis.com/customsearch/v1?q=" + search_term + "&key=" + key + "&cx=" + cx + "&searchType=" + searchType + "&gl=" + gl
+        url = url.encode('utf-8')
         contents = urllib.request.urlopen(url).read()
         j = json.loads(contents)
         if("items" in j):
