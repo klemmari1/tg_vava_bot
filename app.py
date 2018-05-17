@@ -121,16 +121,15 @@ def dailyLimit(query, chat_id):
 def notFound(query, chat_id):
     return bot.sendPhoto(chat_id=chat_id, photo=random.choice(not_found_images), caption=random.choice(not_found_captions))
 
-def get_image_url(search_term):
+def get_image_url(search_terms):
     #Use Google Custom Search API to find an image
     try:
         key = os.environ["G_KEY"]
         cx = os.environ["G_CX"]
         searchType = "image"
         gl = "fi"
-        search_term = search_term.replace(" ", "+")
-        url = "https://www.googleapis.com/customsearch/v1?q=" + search_term + "&key=" + key + "&cx=" + cx + "&searchType=" + searchType + "&gl=" + gl
-        url = url.encode('utf-8')
+        search_terms = urllib.parse.quote_plus(search_terms, safe='', encoding='latin-1', errors=None)
+        url = "https://www.googleapis.com/customsearch/v1?q=" + search_terms + "&key=" + key + "&cx=" + cx + "&searchType=" + searchType + "&gl=" + gl
         contents = urllib.request.urlopen(url).read()
         j = json.loads(contents)
         if("items" in j):
