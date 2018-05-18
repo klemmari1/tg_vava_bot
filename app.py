@@ -103,11 +103,13 @@ def cmdImg(query, chat_id):
     if(items == -1):
         #Send image about daily limit reached
         dailyLimit(query, chat_id)
+        return
     elif(items == -2):
         return
     elif(items == None):
         #Send image about image not found
         notFound(query, chat_id)
+        return
     #Send image that does not give client errors
     for item in items:
         url = item["link"]
@@ -136,17 +138,17 @@ def google_search(search_terms):
         gl = "fi"
         url = "https://www.googleapis.com/customsearch/v1?q=" + search_terms + "&key=" + key + "&cx=" + cx + "&searchType=" + searchType + "&gl=" + gl
         contents = requests.get(url).text
-        j = json.loads(contents)
-        if("items" in j):
-            return j["items"]
+        json_response = json.loads(contents)
+        if("items" in json_response):
+            return json_response["items"]
+        elif("error" in json_response):
+            if("message" in json_response["error"]):
+                if("billing" in json_response["error"]["message"]):
+                    return -1
         return None
     except urllib.error.HTTPError as e:
-        json_err = e.fp.read()
-        print(json_err)
-        if("error" in json_err):
-            if("message" in json_err["error"]):
-                if("billing" in json_err["error"]["message"]):
-                    return -1
+        err = e.fp.read()
+        print(str(err))
     except Exception as e:
         print("Exception: " + str(e))
         return -2
