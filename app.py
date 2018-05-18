@@ -90,7 +90,7 @@ def handleInlineQuery(inline_query):
             items = get_image_urls(query)
             response = bot.sendInlineResponse(inline_query_id=inline_query_id, items=items)
             if (response != True):
-                print("Error sending inline response: " + str(response))
+                print("Error sending inline response: " + str(response.text))
 
 def cmdImg(query, chat_id):
     #Get results with query

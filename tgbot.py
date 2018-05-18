@@ -2,6 +2,7 @@
 
 import requests
 import uuid
+import json
 
 
 class TgbotConnection:
@@ -45,17 +46,19 @@ class TgbotConnection:
                 response = requests.get(photo_url)
                 if response.status_code == 200:
                     thumb_url = item["image"]["thumbnailLink"]
-                    results.append(InlineQueryResultPhoto(photo_url=photo_url, thumb_url=thumb_url))
-            except:
-                pass
-        return self.makeRequest('answerInlineQuery', inline_query_id=inline_query_id, results=results)
+                    results.append(json.dumps(InlineQueryResultPhoto(photo_url=photo_url, thumb_url=thumb_url).__dict__))
+                else:
+                    print("Error getting image")
+            except Exception as e:
+                print("Exception: " + str(e))
+        return self.makeRequest('answerInlineQuery', inline_query_id=inline_query_id, results=json.dumps(results))
 
 
 
 class InlineQueryResultPhoto:
 
     def __init__(self, photo_url, thumb_url):
-        type = "photo"
-        id = uuid.uuid4()
-        photo_url = photo_url
-        thumb_url = thumb_url
+        self.type = "photo"
+        self.id = str(uuid.uuid4())
+        self.photo_url = photo_url
+        self.thumb_url = thumb_url
