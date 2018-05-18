@@ -83,7 +83,7 @@ def handleMessage(msg):
 def handleInlineQuery(inline_query):
     if 'query' in inline_query:
         query = inline_query['query']
-        if query != None:
+        if query != "":
             inline_query_id = inline_query['id']
             print("inline query id: " + str(inline_query_id))
             print("inline query args: " + str(query))

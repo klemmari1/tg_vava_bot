@@ -41,8 +41,13 @@ class TgbotConnection:
         results = []
         for item in items:
             photo_url = item["link"]
-            thumb_url = item["image"]["thumbnailLink"]
-            results.append(InlineQueryResultPhoto(photo_url=photo_url, thumb_url=thumb_url))
+            try:
+                response = requests.get(photo_url)
+                if response.status_code == 200:
+                    thumb_url = item["image"]["thumbnailLink"]
+                    results.append(InlineQueryResultPhoto(photo_url=photo_url, thumb_url=thumb_url))
+            except:
+                pass
         return self.makeRequest('answerInlineQuery', inline_query_id=inline_query_id, results=results)
 
 
