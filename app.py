@@ -39,8 +39,12 @@ not_found_captions = ["You're a special snowflake, aren't you? No image found!",
 def webhook_handler():
     if request.method == "POST":
         message = request.get_json(force=True)
-        message = message['message']
-        handleMessage(message)
+        if "inline_query" in message:
+            inline_query = message['inline_query']
+            handleInlineQuery(inline_query)
+        else:
+            msg = message['message']
+            handleMessage(msg)
     return 'ok'
 
 @app.route('/set_webhook', methods=['GET', 'POST'])
@@ -98,6 +102,13 @@ def cmdImg(query, chat_id):
             idx += 1
         else:
             break
+
+def handleInlineQuery(inline_query):
+    if 'query' in inline_query:
+        query_id = inline_query['id']
+        query_args = inline_query['query']
+        print("query id: " + str(query_id))
+        print("query args: " + str(query_args))
 
 def cmdPuppu(query, chat_id):
     query = urllib.parse.quote_plus(query, safe='', encoding='latin-1', errors=None)
