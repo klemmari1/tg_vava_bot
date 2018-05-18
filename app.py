@@ -2,6 +2,7 @@
 
 import os
 import urllib
+import requests
 import json
 import tgbot
 import random
@@ -87,14 +88,17 @@ def handleInlineQuery(inline_query):
             inline_query_id = inline_query['id']
             print("inline query id: " + str(inline_query_id))
             print("inline query args: " + str(query))
-            items = get_image_urls(query)
-            response = bot.sendInlineResponse(inline_query_id=inline_query_id, items=items)
-            if (response != True):
-                print("Error sending inline response: " + str(response.text))
+            items = google_search(query)
+            if (isinstance(items, list)):
+                response = bot.sendInlineResponse(inline_query_id=inline_query_id, items=items)
+                if (response.status_code >= 400):
+                    print("Error sending inline response: " + str(response.text))
+            else:
+                print("Error getting images from Google search. Response: " + str(items))
 
 def cmdImg(query, chat_id):
     #Get results with query
-    items = get_image_urls(query)
+    items = google_search(query)
     #TODO check daily search quota
     if(items == -1):
         #Send image about daily limit reached
@@ -123,16 +127,15 @@ def cmdPuppu(query, chat_id):
     print(text)
     bot.sendMessage(chat_id=chat_id, text=text)
 
-def get_image_urls(search_terms):
+def google_search(search_terms):
     #Use Google Custom Search API to find an image
     try:
         key = os.environ["G_KEY"]
         cx = os.environ["G_CX"]
         searchType = "image"
         gl = "fi"
-        search_terms = urllib.parse.quote(search_terms, safe='', encoding='latin-1', errors=None)
         url = "https://www.googleapis.com/customsearch/v1?q=" + search_terms + "&key=" + key + "&cx=" + cx + "&searchType=" + searchType + "&gl=" + gl
-        contents = urllib.request.urlopen(url).read()
+        contents = requests.get(url).text
         j = json.loads(contents)
         if("items" in j):
             return j["items"]
