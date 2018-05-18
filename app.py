@@ -80,9 +80,20 @@ def handleMessage(msg):
             print("chat id: " + str(msg['chat']['id']))
             commands[cmdname](args, msg['chat']['id'])
 
+def handleInlineQuery(inline_query):
+    if 'query' in inline_query:
+        inline_query_id = inline_query['id']
+        query_args = inline_query['query']
+        print("inline query id: " + str(inline_query_id))
+        print("inline query args: " + str(query_args))
+        items = get_image_urls(query_args)
+        response = bot.sendInlineResponse(inline_query_id=inline_query_id, items=items)
+        if (response == False):
+            print("Error sending inline response!")
+
 def cmdImg(query, chat_id):
     #Get results with query
-    items = get_image_url(query)
+    items = get_image_urls(query)
     #TODO check daily search quota
     if(items == -1):
         #Send image about daily limit reached
@@ -93,22 +104,13 @@ def cmdImg(query, chat_id):
         #Send image about image not found
         notFound(query, chat_id)
     #Send image that does not give client errors
-    idx = 0
-    while True:
-        url = items[idx]["link"]
+    for item in items:
+        url = item["link"]
         response = bot.sendPhoto(chat_id=chat_id, photo=url)
         if (response.status_code >= 400):
             print(str(response))
-            idx += 1
         else:
             break
-
-def handleInlineQuery(inline_query):
-    if 'query' in inline_query:
-        query_id = inline_query['id']
-        query_args = inline_query['query']
-        print("query id: " + str(query_id))
-        print("query args: " + str(query_args))
 
 def cmdPuppu(query, chat_id):
     query = urllib.parse.quote_plus(query, safe='', encoding='latin-1', errors=None)
@@ -120,19 +122,7 @@ def cmdPuppu(query, chat_id):
     print(text)
     bot.sendMessage(chat_id=chat_id, text=text)
 
-def testImg(query, chat_id):
-    if query == "1":
-        print(dailyLimit(query, chat_id))
-    elif query == "2":
-        print(notFound(query, chat_id))
-
-def dailyLimit(query, chat_id):
-    return bot.sendPhoto(chat_id=chat_id, photo=random.choice(error_images), caption="You done reached my daily search limit again :(")
-
-def notFound(query, chat_id):
-    return bot.sendPhoto(chat_id=chat_id, photo=random.choice(not_found_images), caption=random.choice(not_found_captions))
-
-def get_image_url(search_terms):
+def get_image_urls(search_terms):
     #Use Google Custom Search API to find an image
     try:
         key = os.environ["G_KEY"]
@@ -156,6 +146,18 @@ def get_image_url(search_terms):
     except Exception as e:
         print("Exception: " + str(e))
         return -2
+
+def testImg(query, chat_id):
+    if query == "1":
+        print(dailyLimit(query, chat_id))
+    elif query == "2":
+        print(notFound(query, chat_id))
+
+def dailyLimit(query, chat_id):
+    return bot.sendPhoto(chat_id=chat_id, photo=random.choice(error_images), caption="You done reached my daily search limit again :(")
+
+def notFound(query, chat_id):
+    return bot.sendPhoto(chat_id=chat_id, photo=random.choice(not_found_images), caption=random.choice(not_found_captions))
 
 
 if __name__ == '__main__':

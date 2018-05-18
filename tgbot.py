@@ -1,6 +1,7 @@
 # -*- encoding: utf8 -*-
 
 import requests
+import uuid
 
 
 class TgbotConnection:
@@ -35,3 +36,21 @@ class TgbotConnection:
 
     def setWebhook(self, url):
         return self.makeRequest('setWebhook', url=url)
+
+    def sendInlineResponse(self, inline_query_id, items):
+        results = []
+        for item in items:
+            photo_url = item["link"]
+            thumb_url = item["image"]["thumbnailLink"]
+            results.append(InlineQueryResultPhoto(photo_url=photo_url, thumb_url=thumb_url))
+        return self.makeRequest('answerInlineQuery', inline_query_id=inline_query_id, results=results)
+
+
+
+class InlineQueryResultPhoto:
+
+    def __init__(self, photo_url, thumb_url):
+        type = "photo"
+        id = uuid.uuid4()
+        photo_url = photo_url
+        thumb_url = thumb_url
