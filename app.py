@@ -82,14 +82,15 @@ def handleMessage(msg):
 
 def handleInlineQuery(inline_query):
     if 'query' in inline_query:
-        inline_query_id = inline_query['id']
-        query_args = inline_query['query']
-        print("inline query id: " + str(inline_query_id))
-        print("inline query args: " + str(query_args))
-        items = get_image_urls(query_args)
-        response = bot.sendInlineResponse(inline_query_id=inline_query_id, items=items)
-        if (response == False):
-            print("Error sending inline response!")
+        query = inline_query['query']
+        if query != None:
+            inline_query_id = inline_query['id']
+            print("inline query id: " + str(inline_query_id))
+            print("inline query args: " + str(query))
+            items = get_image_urls(query)
+            response = bot.sendInlineResponse(inline_query_id=inline_query_id, items=items)
+            if (response != True):
+                print("Error sending inline response: " + str(response))
 
 def cmdImg(query, chat_id):
     #Get results with query
