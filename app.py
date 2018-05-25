@@ -97,6 +97,9 @@ def handleInlineQuery(inline_query):
                 print("Error getting images from Google search. Response: " + str(items))
 
 def cmdImg(query, chat_id):
+    #If empty query
+    if(not query):
+        return
     #Get results with query
     items = google_search(query)
     #TODO check daily search quota
