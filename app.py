@@ -91,7 +91,7 @@ def handleInlineQuery(inline_query):
             items = google_search(query)
             if (isinstance(items, list)):
                 response = bot.sendInlineResponse(inline_query_id=inline_query_id, items=items)
-                if (response.status_code >= 400):
+                if (response.status_code != 200):
                     print("Error sending inline response: " + str(response.text))
             else:
                 print("Error getting images from Google search. Response: " + str(items))
@@ -117,7 +117,7 @@ def cmdImg(query, chat_id):
     for item in items:
         url = item["link"]
         response = bot.sendPhoto(chat_id=chat_id, photo=url)
-        if (response.status_code >= 400):
+        if (response.status_code != 200):
             print(str(response))
         else:
             break
