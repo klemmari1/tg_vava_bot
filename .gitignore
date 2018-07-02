@@ -2,3 +2,5 @@
 g_*
 token.txt
 *.log
+.idea/
+
