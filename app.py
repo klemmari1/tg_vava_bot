@@ -123,7 +123,7 @@ def cmdImg(query, chat_id):
             break
 
 def cmdPuppu(query, chat_id):
-    query = urllib.parse.quote_plus(query, safe='', encoding='latin-1', errors=None)
+    query = urllib.parse.quote_plus(query, safe='', encoding='utf-8', errors=None)
     url = "http://puppulausegeneraattori.fi/?avainsana=" + query
     response = urllib.request.urlopen(url).read()
     soup=BeautifulSoup(response, "html5lib")
