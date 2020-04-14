@@ -12,7 +12,16 @@ from bs4 import BeautifulSoup
 
 app = Flask(__name__)
 
-bot = tgbot.TgbotConnection(os.environ["TOKEN"])
+# Environment variables
+TELEGRAM_TOKEN = os.environ["TOKEN"]
+
+TELEGRAM_HOOK = os.environ["HOOK"]
+
+GOOGLE_SEARCH_KEY = os.environ["G_KEY"]
+
+GOOGLE_SEARCH_CX = os.environ["G_CX"]
+
+bot = tgbot.TgbotConnection(TELEGRAM_TOKEN)
 
 error_images = [
     "https://miro.medium.com/max/1400/1*pUEZd8z__1p-7ICIO1NZFA.png",
@@ -27,7 +36,7 @@ not_found_captions = [
 ]
 
 
-@app.route("/" + os.environ["HOOK"], methods=["POST"])
+@app.route("/" + TELEGRAM_HOOK, methods=["POST"])
 def webhook_handler():
     if request.method == "POST":
         message = request.get_json(force=True)
@@ -43,7 +52,7 @@ def webhook_handler():
 @app.route("/set_webhook", methods=["GET", "POST"])
 def set_webhook():
     print("Host URL: " + request.host_url)
-    s = bot.setWebhook(request.host_url + os.environ["HOOK"])
+    s = bot.setWebhook(request.host_url + TELEGRAM_HOOK)
     if s:
         return "webhook setup ok"
     else:
@@ -132,17 +141,15 @@ def cmdPuppu(query, chat_id):
 def google_search(search_terms):
     # Use Google Custom Search API to find an image
     try:
-        key = os.environ["G_KEY"]
-        cx = os.environ["G_CX"]
         searchType = "image"
         gl = "fi"
         url = (
             "https://www.googleapis.com/customsearch/v1?q="
             + search_terms
             + "&key="
-            + key
+            + GOOGLE_SEARCH_KEY
             + "&cx="
-            + cx
+            + GOOGLE_SEARCH_CX
             + "&searchType="
             + searchType
             + "&gl="
