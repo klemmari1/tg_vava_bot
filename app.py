@@ -12,6 +12,7 @@ from bs4 import BeautifulSoup
 
 app = Flask(__name__)
 
+
 # Environment variables
 TELEGRAM_TOKEN = os.environ["TOKEN"]
 
@@ -21,7 +22,9 @@ GOOGLE_SEARCH_KEY = os.environ["G_KEY"]
 
 GOOGLE_SEARCH_CX = os.environ["G_CX"]
 
+
 bot = tgbot.TgbotConnection(TELEGRAM_TOKEN)
+
 
 error_images = [
     "https://miro.medium.com/max/1400/1*pUEZd8z__1p-7ICIO1NZFA.png",
@@ -40,11 +43,12 @@ not_found_captions = [
 def webhook_handler():
     if request.method == "POST":
         message = request.get_json(force=True)
+        print("Response:" + str(message))
         if "inline_query" in message:
             inline_query = message["inline_query"]
             handleInlineQuery(inline_query)
         else:
-            msg = message["message"]
+            msg = message.get("message", message.get("edited_message", None))
             handleMessage(msg)
     return "ok"
 
@@ -65,7 +69,7 @@ def index():
 
 
 def handleMessage(msg):
-    if "text" in msg:
+    if msg and "text" in msg:
         text = msg["text"]
         commands = {"/img": cmdImg, "/puppu": cmdPuppu, "/vtest": testImg}
         try:
