@@ -75,6 +75,7 @@ def handleMessage(msg):
             "/img": cmdImg,
             "/puppu": cmdPuppu,
             "/inspis": cmdInspis,
+            "/help": cmdHelp,
             "/vtest": testImg,
         }
         try:
@@ -150,14 +151,23 @@ def cmdPuppu(query, chat_id):
 def cmdInspis(query, chat_id):
     url = "https://inspirobot.me/api?generate=true"
     headers = {
-        "User-Agent": """Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5)
-        AppleWebKit/537.36 (KHTML, like Gecko)
-        Chrome/50.0.2661.102 Safari/537.36"""
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5)"
+        "AppleWebKit/537.36 (KHTML, like Gecko)"
+        "Chrome/50.0.2661.102 Safari/537.36"
     }
     response = requests.get(url, headers=headers)
     url = response.content.decode("utf-8")
     print(url)
     bot.sendPhoto(chat_id=chat_id, photo=url)
+
+
+def cmdHelp(query, chat_id):
+    help_text = (
+        '/img query - Post the first image from Google image search with the given query ("I\'m Feeling Lucky")\n'
+        '/puppu input - Generate a "puppulause" from the given input (From http://puppulausegeneraattori.fi/)\n'
+        "/inspis - Generate a random inspirational image (From https://inspirobot.me/)"
+    )
+    bot.sendMessage(chat_id=chat_id, text=help_text)
 
 
 def google_search(search_terms):
