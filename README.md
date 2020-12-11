@@ -9,6 +9,8 @@ App uses Telegram Bot API for communication with Telegram and Google Search API 
 
 /puppu *input* - Generate a "puppulause" from the given input (From http://puppulausegeneraattori.fi/)
 
+/inspis - Generate a random inspirational image (From https://inspirobot.me/)
+
 
 You need to add ENV variables:
 

@@ -71,7 +71,12 @@ def index():
 def handleMessage(msg):
     if msg and "text" in msg:
         text = msg["text"]
-        commands = {"/img": cmdImg, "/puppu": cmdPuppu, "/vtest": testImg}
+        commands = {
+            "/img": cmdImg,
+            "/puppu": cmdPuppu,
+            "/inspis": cmdInspis,
+            "/vtest": testImg,
+        }
         try:
             cmdname, args = text.split(" ", 1)
         except ValueError:
@@ -140,6 +145,15 @@ def cmdPuppu(query, chat_id):
     text = text.contents[0]
     print(text)
     bot.sendMessage(chat_id=chat_id, text=text)
+
+
+def cmdInspis(query, chat_id):
+    url = "https://inspirobot.me/api?generate=true"
+    headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
+    response = requests.get(url, headers=headers)
+    url = response.content.decode("utf-8")
+    print(url)
+    bot.sendPhoto(chat_id=chat_id, photo=url)
 
 
 def google_search(search_terms):
