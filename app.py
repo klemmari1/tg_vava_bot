@@ -1,14 +1,14 @@
 # -*- encoding: utf8 -*-
 """
-@klemmari_bot `query` - Select and send an image from Google image search results with the given query
+@klemmari\_bot `query` \- Select and send an image from Google image search results with the given query
 
-/img `query` - Post the first image from Google image search with the given query ("I\'m Feeling Lucky")
+/img `query` \- Post the first image from Google image search with the given query \("I'm Feeling Lucky"\)
 
-/puppu `input` - Generate a "puppulause" from the given input
+/puppu `input` \- Generate a "puppulause" from the given input
 
-/inspis - Generate a random inspirational image
+/inspis \- Generate a random inspirational image
 
-/help - Show this help message
+/help \- Show this help message
 """
 
 import os
@@ -17,6 +17,7 @@ import requests
 import json
 import tgbot
 import random
+import re
 from flask import Flask, request
 from bs4 import BeautifulSoup
 
@@ -174,7 +175,12 @@ def cmdInspis(query, chat_id):
 
 def cmdHelp(query, chat_id):
     help_text = __doc__
-    bot.sendMessage(chat_id=chat_id, text=help_text, parse_mode="markdown")
+    bot.sendMessage(
+        chat_id=chat_id,
+        text=help_text,
+        parse_mode="MarkdownV2",
+        disable_notification=True,
+    )
 
 
 def google_search(search_terms):
