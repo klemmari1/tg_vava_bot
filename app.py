@@ -1,4 +1,15 @@
 # -*- encoding: utf8 -*-
+"""
+@klemmari_bot `query` - Select and send an image from Google image search results with the given query
+
+/img `query` - Post the first image from Google image search with the given query ("I\'m Feeling Lucky")
+
+/puppu `input` - Generate a "puppulause" from the given input
+
+/inspis - Generate a random inspirational image
+
+/help - Show this help message
+"""
 
 import os
 import urllib
@@ -162,12 +173,8 @@ def cmdInspis(query, chat_id):
 
 
 def cmdHelp(query, chat_id):
-    help_text = (
-        '/img `query` - Post the first image from Google image search with the given query ("I\'m Feeling Lucky")\n\n'
-        '/puppu `input` - Generate a "puppulause" from the given input (From http://puppulausegeneraattori.fi/)\n\n'
-        "/inspis - Generate a random inspirational image (From https://inspirobot.me/)"
-    )
-    bot.sendMessage(chat_id=chat_id, text=help_text)
+    help_text = __doc__
+    bot.sendMessage(chat_id=chat_id, text=help_text, parse_mode="markdown")
 
 
 def google_search(search_terms):

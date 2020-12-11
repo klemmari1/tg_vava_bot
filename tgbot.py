@@ -25,7 +25,7 @@ class TgbotConnection:
             except requests.exceptions.ConnectionError as ex:
                 print(
                     "Connection error ({}) for  {} (try #{}), params: {}".format(
-                        ex, reqname, retries, params
+                        ex, reqname, retries, str(params)
                     )
                 )
                 continue
@@ -34,8 +34,8 @@ class TgbotConnection:
             response.encoding = "utf-8"
             return response
 
-    def sendMessage(self, chat_id, text):
-        return self.makeRequest("sendMessage", chat_id=chat_id, text=text)
+    def sendMessage(self, chat_id, text, **params):
+        return self.makeRequest("sendMessage", chat_id=chat_id, text=text, **params)
 
     def sendPhoto(self, chat_id, photo, caption=None):
         return self.makeRequest(

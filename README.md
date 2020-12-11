@@ -3,7 +3,7 @@ Telegram chat bot created with Python 3.6.5. Communication implemented with a we
 
 App uses Telegram Bot API for communication with Telegram and Google Search API for the searches.
 
-@bot_name *query* - Choose image from google search results with the given query
+@bot_name *query* - Select and send an image from Google image search results with the given query
 
 /img *query* - Post the first image from Google image search with the given query ("I'm Feeling Lucky")
 
@@ -11,6 +11,7 @@ App uses Telegram Bot API for communication with Telegram and Google Search API 
 
 /inspis - Generate a random inspirational image (From https://inspirobot.me/)
 
+/help - Show this help message
 
 You need to add ENV variables:
 
