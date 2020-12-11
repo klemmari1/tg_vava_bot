@@ -1,10 +1,10 @@
 # -*- encoding: utf8 -*-
 """
-@klemmari\_bot `query` \- Select and send an image from Google image search results with the given query
+@klemmari\_bot _query_ \- Select and send an image from Google image search results with the given query
 
-/img `query` \- Post the first image from Google image search with the given query \("I'm Feeling Lucky"\)
+/img _query_ \- Post the first image from Google image search with the given query \("I'm Feeling Lucky"\)
 
-/puppu `input` \- Generate a "puppulause" from the given input
+/puppu _input_ \- Generate a "puppulause" from the given input
 
 /inspis \- Generate a random inspirational image
 
