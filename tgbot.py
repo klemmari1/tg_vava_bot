@@ -1,8 +1,9 @@
 # -*- encoding: utf8 -*-
 
-import requests
-import uuid
 import json
+import uuid
+
+import requests
 
 
 class TgbotConnection:

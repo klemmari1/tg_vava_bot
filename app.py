@@ -11,16 +11,16 @@
 /help \- Show this help message
 """
 
-import os
-import urllib
-import requests
 import json
-import tgbot
+import os
 import random
-import re
-from flask import Flask, request
-from bs4 import BeautifulSoup
+import urllib
 
+import requests
+from bs4 import BeautifulSoup
+from flask import Flask, request
+
+import tgbot
 
 app = Flask(__name__)
 
@@ -95,6 +95,8 @@ def handleMessage(msg):
         except ValueError:
             cmdname = text
             args = ""
+        if "@" in cmdname:
+            cmdname = cmdname.split("@")[0]
         if cmdname in commands:
             print("command: " + str(cmdname))
             print("args: " + str(args))
