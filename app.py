@@ -16,9 +16,11 @@ import os
 import random
 import urllib
 
+import jwt
 import requests
 from bs4 import BeautifulSoup
 from flask import Flask, request
+from werkzeug.wrappers import Response
 
 import tgbot
 
@@ -26,13 +28,17 @@ app = Flask(__name__)
 
 
 # Environment variables
-TELEGRAM_TOKEN = os.environ["TOKEN"]
+TELEGRAM_TOKEN = os.getenv("TOKEN", "test")
 
-TELEGRAM_HOOK = os.environ["HOOK"]
+TELEGRAM_HOOK = os.getenv("HOOK", "test")
 
-GOOGLE_SEARCH_KEY = os.environ["G_KEY"]
+GOOGLE_SEARCH_KEY = os.getenv("G_KEY", "test")
 
-GOOGLE_SEARCH_CX = os.environ["G_CX"]
+GOOGLE_SEARCH_CX = os.getenv("G_CX", "test")
+
+ALERT_CHAT_IDS = os.getenv("ALERT_CHAT_IDS", "test, test")
+
+ALERT_KEY = os.getenv("ALERT_KEY", "test")
 
 
 bot = tgbot.TgbotConnection(TELEGRAM_TOKEN)
@@ -65,7 +71,7 @@ def webhook_handler():
     return "ok"
 
 
-@app.route("/set_webhook", methods=["GET", "POST"])
+@app.route("/set_webhook", methods=["GET"])
 def set_webhook():
     print("Host URL: " + request.host_url)
     s = bot.setWebhook(request.host_url + TELEGRAM_HOOK)
@@ -73,6 +79,37 @@ def set_webhook():
         return "webhook setup ok"
     else:
         return "webhook setup failed"
+
+
+def decode_auth_token(auth_token):
+    try:
+        jwt.decode(auth_token, ALERT_KEY)
+    except:
+        return False
+    return True
+
+
+@app.route("/send_alert", methods=["POST"])
+def send_alert():
+    auth_token = request.headers.get("Authorization")
+    auth_succesfull = decode_auth_token(auth_token)
+    if not auth_succesfull:
+        return Response("Access denied!", 401)
+
+    message = request.data
+
+    chat_ids = ALERT_CHAT_IDS.split(", ")
+    for chat_id in chat_ids:
+        if chat_id:
+            response = bot.sendMessage(
+                chat_id=chat_id,
+                text=message,
+            )
+            print("SEND ALERT:")
+            print(response.status_code)
+            print(response.content)
+
+    return "OK"
 
 
 @app.route("/")
