@@ -1,5 +1,5 @@
 # tg_vava_bot
-Telegram chat bot created with Python 3.6.5. Communication implemented with a webhook. App implemented with Flask. Easy to deploy to Heroku.
+Telegram chat bot created with Python 3.8.5. Communication implemented with a webhook. App implemented with Flask. Easy to deploy to Heroku.
 
 App uses Telegram Bot API for communication with Telegram and Google Search API for the searches.
 
@@ -10,6 +10,10 @@ App uses Telegram Bot API for communication with Telegram and Google Search API 
 /puppu *input* - Generate a "puppulause" from the given input (From http://puppulausegeneraattori.fi/)
 
 /inspis - Generate a random inspirational image (From https://inspirobot.me/)
+
+/subscribe - Subscribe chat to sale alerts
+
+/unsubscribe - Unubscribe chat from sale alerts
 
 /help - Show this help message
 

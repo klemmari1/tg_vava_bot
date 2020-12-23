@@ -8,6 +8,10 @@
 
 /inspis \- Generate a random inspirational image
 
+/subscribe \- Subscribe chat to sale alerts
+
+/unsubscribe \- Unubscribe chat from sale alerts
+
 /help \- Show this help message
 """
 
@@ -20,10 +24,19 @@ import requests
 from bs4 import BeautifulSoup
 from flask import Flask, request
 
-import consumer  # noqa
 import tgbot
+from chats import Chat, db
 
 app = Flask(__name__)
+
+# DB Setup
+conn_str = os.getenv("DATABASE_URL", "sqlite:///app.db")
+app.config["SQLALCHEMY_DATABASE_URI"] = conn_str
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+db.init_app(app)
+app.app_context().push()
+db.create_all()
 
 
 # Environment variables
@@ -88,6 +101,8 @@ def handleMessage(msg):
             "/img": cmdImg,
             "/puppu": cmdPuppu,
             "/inspis": cmdInspis,
+            "/subscribe": cmdSubscribe,
+            "/unsubscribe": cmdUnsubscribe,
             "/help": cmdHelp,
             "/vtest": testImg,
         }
@@ -138,7 +153,7 @@ def cmdImg(query, chat_id):
         return
     elif items == -2:
         return
-    elif items == None:
+    elif items is None:
         # Send image about image not found
         notFound(query, chat_id)
         return
@@ -183,6 +198,36 @@ def cmdHelp(query, chat_id):
         text=help_text,
         parse_mode="MarkdownV2",
         disable_notification=True,
+    )
+
+
+def cmdSubscribe(query, chat_id):
+    chat = Chat.query.get(chat_id)
+    if not chat:
+        chat = Chat(id=chat_id)
+        chat.subscribe()
+
+        text = "Subscribed to sale alerts!"
+    else:
+        text = "Chat already subscribed to sale alerts!"
+
+    bot.sendMessage(
+        chat_id=chat_id,
+        text=text,
+    )
+
+
+def cmdUnsubscribe(query, chat_id):
+    chat = Chat.query.get(chat_id)
+    if chat:
+        chat.unsubscribe()
+
+        text = "Unsubscribed from sale alerts!"
+    else:
+        text = "Chat is not subscribed to sale alerts!"
+    bot.sendMessage(
+        chat_id=chat_id,
+        text=text,
     )
 
 
@@ -244,4 +289,4 @@ def notFound(query, chat_id):
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, port=5001)

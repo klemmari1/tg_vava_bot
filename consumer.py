@@ -1,44 +1,46 @@
 import json
 import os
-from threading import Thread
 
 import pika
 
-# ENV variables
-ALERT_CHAT_IDS = os.getenv("ALERT_CHAT_IDS", "test, test").split(", ")
+from app import app, bot
+from chats import Chat
 
+# ENV variables
 RABBIT_MQ_URL = os.getenv("RABBIT_MQ_URL", "")
 
 
 def callback(ch, method, properties, body):
-    from app import bot
+    with app.app_context():
+        data = json.loads(body)
+        message = data["message"]
 
-    data = json.loads(body)
-    message = data["message"]
-
-    if properties.content_type == "sale_alert":
-        for chat_id in ALERT_CHAT_IDS:
-            response = bot.sendMessage(
-                chat_id=chat_id,
-                text=message,
-            )
-            print("SEND ALERT:")
-            print(response.status_code)
-            print(response.content)
+        if properties.content_type == "io-tech":
+            chats = Chat.query.all()
+            chat_ids = [chat.id for chat in chats]
+            for chat_id in chat_ids:
+                response = bot.sendMessage(
+                    chat_id=chat_id,
+                    text=message,
+                    disable_web_page_preview=True,
+                )
+                print("SEND ALERT:")
+                print(response.status_code)
+                print(response.content)
 
     ch.basic_ack(delivery_tag=method.delivery_tag)
 
 
-if RABBIT_MQ_URL:
-    params = pika.URLParameters(RABBIT_MQ_URL)
+params = pika.URLParameters(RABBIT_MQ_URL)
 
-    connection = pika.BlockingConnection(params)
+connection = pika.BlockingConnection(params)
 
-    channel = connection.channel()
+channel = connection.channel()
 
-    channel.queue_declare(queue="tgbot")
+channel.queue_declare(queue="sale_alerts")
 
-    channel.basic_consume(queue="tgbot", on_message_callback=callback)
+channel.basic_consume(queue="sale_alerts", on_message_callback=callback)
 
-    thread = Thread(target=channel.start_consuming)
-    thread.start()
+print("Started consuming")
+
+channel.start_consuming()
