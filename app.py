@@ -20,9 +20,10 @@ import os
 import random
 import urllib
 
+import jwt
 import requests
 from bs4 import BeautifulSoup
-from flask import Flask, request
+from flask import Flask, Response, request
 
 import tgbot
 from chats import Chat, db
@@ -48,6 +49,8 @@ GOOGLE_SEARCH_KEY = os.getenv("G_KEY", "test")
 
 GOOGLE_SEARCH_CX = os.getenv("G_CX", "test")
 
+EXTERNAL_ENDPOINT_KEY = os.getenv("EXTERNAL_ENDPOINT_KEY", "test")
+
 
 bot = tgbot.TgbotConnection(TELEGRAM_TOKEN)
 
@@ -69,7 +72,7 @@ not_found_captions = [
 def webhook_handler():
     if request.method == "POST":
         message = request.get_json(force=True)
-        print("Response:" + str(message))
+        print("Incoming request:" + str(message))
         if "inline_query" in message:
             inline_query = message["inline_query"]
             handleInlineQuery(inline_query)
@@ -87,6 +90,38 @@ def set_webhook():
         return "webhook setup ok"
     else:
         return "webhook setup failed"
+
+
+def decode_auth_token(auth_token):
+    try:
+        jwt.decode(auth_token, EXTERNAL_ENDPOINT_KEY, algorithms=["HS256"])
+    except:
+        return False
+    return True
+
+
+@app.route("/send_alert", methods=["POST"])
+def send_alert():
+    auth_token = request.headers.get("Authorization")
+    auth_succesfull = decode_auth_token(auth_token)
+    if not auth_succesfull:
+        return Response("Access denied!", 401)
+
+    message = request.data
+
+    chats = Chat.query.all()
+    chat_ids = [chat.id for chat in chats]
+    for chat_id in chat_ids:
+        response = bot.sendMessage(
+            chat_id=chat_id,
+            text=message,
+            disable_web_page_preview=True,
+        )
+        print("SEND ALERT:")
+        print(response.status_code)
+        print(response.content)
+
+    return "OK"
 
 
 @app.route("/")
