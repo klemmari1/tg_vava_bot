@@ -95,7 +95,8 @@ def set_webhook():
 def decode_auth_token(auth_token):
     try:
         jwt.decode(auth_token, EXTERNAL_ENDPOINT_KEY, algorithms=["HS256"])
-    except:
+    except Exception as e:
+        print(str(e))
         return False
     return True
 
