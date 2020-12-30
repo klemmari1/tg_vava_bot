@@ -7,9 +7,9 @@ db = SQLAlchemy()
 
 @dataclass
 class Chat(db.Model):
-    id: int
+    id: str
 
-    id = db.Column(db.Integer, primary_key=True, autoincrement=False)
+    id = db.Column(db.String(120), primary_key=True)
 
     def __repr__(self):
         return "<Chat %r>" % self.id

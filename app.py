@@ -238,6 +238,7 @@ def cmdHelp(query, chat_id):
 
 
 def cmdSubscribe(query, chat_id):
+    chat_id = str(chat_id)
     chat = Chat.query.get(chat_id)
     if not chat:
         chat = Chat(id=chat_id)
@@ -254,6 +255,7 @@ def cmdSubscribe(query, chat_id):
 
 
 def cmdUnsubscribe(query, chat_id):
+    chat_id = str(chat_id)
     chat = Chat.query.get(chat_id)
     if chat:
         chat.unsubscribe()
