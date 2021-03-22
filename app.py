@@ -10,7 +10,7 @@
 
 /subscribe \- Subscribe chat to sale alerts
 
-/unsubscribe \- Unubscribe chat from sale alerts
+/unsubscribe \- Unsubscribe chat from sale alerts
 
 /help \- Show this help message
 """

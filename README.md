@@ -13,7 +13,7 @@ App uses Telegram Bot API for communication with Telegram and Google Search API 
 
 /subscribe - Subscribe chat to sale alerts
 
-/unsubscribe - Unubscribe chat from sale alerts
+/unsubscribe - Unsubscribe chat from sale alerts
 
 /help - Show this help message
 
