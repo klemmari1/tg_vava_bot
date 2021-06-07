@@ -1,4 +1,5 @@
 # -*- encoding: utf8 -*-
+
 """
 @klemmari\_bot _query_ \- Select and send an image from Google image search results with the given query
 
@@ -13,7 +14,7 @@
 /unsubscribe \- Unsubscribe chat from sale alerts
 
 /help \- Show this help message
-"""
+"""  # noqa
 
 import json
 import os
@@ -23,7 +24,7 @@ import urllib
 import jwt
 import requests
 from bs4 import BeautifulSoup
-from flask import Flask, Response, request
+from flask import Flask, request, Response
 
 import tgbot
 from chats import Chat, db

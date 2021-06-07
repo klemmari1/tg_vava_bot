@@ -1,0 +1,14 @@
+beautifulsoup4
+black
+flake8
+flask
+flask-sqlalchemy
+gunicorn
+isort
+jinja2
+pip-tools
+psycopg2
+pyjwt
+requests
+sqlalchemy
+werkzeug
