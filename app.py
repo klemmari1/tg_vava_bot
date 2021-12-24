@@ -208,7 +208,7 @@ def cmdPuppu(query, chat_id):
     query = urllib.parse.quote_plus(query, safe="", encoding="utf-8", errors=None)
     url = "http://puppulausegeneraattori.fi/?avainsana=" + query
     response = urllib.request.urlopen(url).read()
-    soup = BeautifulSoup(response, "html5lib")
+    soup = BeautifulSoup(response, "html.parser")
     text = soup.find("p", {"class": "lause"})
     text = text.contents[0]
     print(text)
