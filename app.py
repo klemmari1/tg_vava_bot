@@ -76,10 +76,10 @@ def webhook_handler():
         print("Incoming request:" + str(message))
         if "inline_query" in message:
             inline_query = message["inline_query"]
-            handleInlineQuery(inline_query)
+            handle_inline_query(inline_query)
         else:
             msg = message.get("message", message.get("edited_message", None))
-            handleMessage(msg)
+            handle_message(msg)
     return "ok"
 
 
@@ -131,17 +131,17 @@ def index():
     return "Hello World!"
 
 
-def handleMessage(msg):
+def handle_message(msg):
     if msg and "text" in msg:
         text = msg["text"]
         commands = {
-            "/img": cmdImg,
-            "/puppu": cmdPuppu,
-            "/inspis": cmdInspis,
-            "/subscribe": cmdSubscribe,
-            "/unsubscribe": cmdUnsubscribe,
-            "/help": cmdHelp,
-            "/vtest": testImg,
+            "/img": cmd_img,
+            "/puppu": cmd_puppu,
+            "/inspis": cmd_inspis,
+            "/subscribe": cmd_subscribe,
+            "/unsubscribe": cmd_unsubscribe,
+            "/help": cmd_help,
+            "/vtest": test_img,
         }
         try:
             cmdname, args = text.split(" ", 1)
@@ -157,7 +157,7 @@ def handleMessage(msg):
             commands[cmdname](args, msg["chat"]["id"])
 
 
-def handleInlineQuery(inline_query):
+def handle_inline_query(inline_query):
     if "query" in inline_query:
         query = inline_query["query"]
         if query != "":
@@ -177,7 +177,7 @@ def handleInlineQuery(inline_query):
                 )
 
 
-def cmdImg(query, chat_id):
+def cmd_img(query, chat_id):
     # If empty query
     if not query:
         return
@@ -186,13 +186,13 @@ def cmdImg(query, chat_id):
     # TODO check daily search quota
     if items == -1:
         # Send image about daily limit reached
-        dailyLimit(query, chat_id)
+        daily_limit(query, chat_id)
         return
     elif items == -2:
         return
     elif items is None:
         # Send image about image not found
-        notFound(query, chat_id)
+        not_found(query, chat_id)
         return
     # Send image that does not give client errors
     for item in items:
@@ -204,7 +204,7 @@ def cmdImg(query, chat_id):
             break
 
 
-def cmdPuppu(query, chat_id):
+def cmd_puppu(query, chat_id):
     query = urllib.parse.quote_plus(query, safe="", encoding="utf-8", errors=None)
     url = "http://puppulausegeneraattori.fi/?avainsana=" + query
     response = urllib.request.urlopen(url).read()
@@ -215,7 +215,7 @@ def cmdPuppu(query, chat_id):
     bot.sendMessage(chat_id=chat_id, text=text)
 
 
-def cmdInspis(query, chat_id):
+def cmd_inspis(query, chat_id):
     url = "https://inspirobot.me/api?generate=true"
     headers = {
         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5)"
@@ -228,7 +228,7 @@ def cmdInspis(query, chat_id):
     bot.sendPhoto(chat_id=chat_id, photo=url)
 
 
-def cmdHelp(query, chat_id):
+def cmd_help(query, chat_id):
     help_text = __doc__
     bot.sendMessage(
         chat_id=chat_id,
@@ -238,7 +238,7 @@ def cmdHelp(query, chat_id):
     )
 
 
-def cmdSubscribe(query, chat_id):
+def cmd_subscribe(query, chat_id):
     chat_id = str(chat_id)
     chat = Chat.query.get(chat_id)
     if not chat:
@@ -255,7 +255,7 @@ def cmdSubscribe(query, chat_id):
     )
 
 
-def cmdUnsubscribe(query, chat_id):
+def cmd_unsubscribe(query, chat_id):
     chat_id = str(chat_id)
     chat = Chat.query.get(chat_id)
     if chat:
@@ -304,14 +304,14 @@ def google_search(search_terms):
         return -2
 
 
-def testImg(query, chat_id):
+def test_img(query, chat_id):
     if query == "1":
-        print(dailyLimit(query, chat_id))
+        print(daily_limit(query, chat_id))
     elif query == "2":
-        print(notFound(query, chat_id))
+        print(not_found(query, chat_id))
 
 
-def dailyLimit(query, chat_id):
+def daily_limit(query, chat_id):
     return bot.sendPhoto(
         chat_id=chat_id,
         photo=random.choice(error_images),
@@ -319,7 +319,7 @@ def dailyLimit(query, chat_id):
     )
 
 
-def notFound(query, chat_id):
+def not_found(query, chat_id):
     return bot.sendPhoto(
         chat_id=chat_id,
         photo=random.choice(not_found_images),
