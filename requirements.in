@@ -12,3 +12,4 @@ pyjwt
 requests
 sqlalchemy
 werkzeug
+sentry-sdk[flask]

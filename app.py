@@ -17,22 +17,24 @@
 """  # noqa
 
 import json
-import os
 import random
 import urllib
 
 import jwt
 import requests
+import sentry_sdk
 from bs4 import BeautifulSoup
 from flask import Flask, request, Response
+from sentry_sdk.integrations.flask import FlaskIntegration
 
+import settings
 import tgbot
 from chats import Chat, db
 
 app = Flask(__name__)
 
 # DB Setup
-conn_str = os.getenv("DATABASE_URL", "sqlite:///app.db")
+conn_str = settings.DATABASE_URL
 app.config["SQLALCHEMY_DATABASE_URI"] = conn_str
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
@@ -40,20 +42,17 @@ db.init_app(app)
 app.app_context().push()
 db.create_all()
 
+# Sentry setup
+sentry_sdk.init(
+    dsn=settings.SENTRY_DSN,
+    integrations=[FlaskIntegration()],
+    # Set traces_sample_rate to 1.0 to capture 100%
+    # of transactions for performance monitoring.
+    # We recommend adjusting this value in production.
+    traces_sample_rate=1.0,
+)
 
-# Environment variables
-TELEGRAM_TOKEN = os.getenv("TOKEN", "test")
-
-TELEGRAM_HOOK = os.getenv("HOOK", "test")
-
-GOOGLE_SEARCH_KEY = os.getenv("G_KEY", "test")
-
-GOOGLE_SEARCH_CX = os.getenv("G_CX", "test")
-
-EXTERNAL_ENDPOINT_KEY = os.getenv("EXTERNAL_ENDPOINT_KEY", "test")
-
-
-bot = tgbot.TgbotConnection(TELEGRAM_TOKEN)
+bot = tgbot.TgbotConnection(settings.TELEGRAM_TOKEN)
 
 
 error_images = [
@@ -69,7 +68,7 @@ not_found_captions = [
 ]
 
 
-@app.route("/" + TELEGRAM_HOOK, methods=["POST"])
+@app.route("/" + settings.TELEGRAM_HOOK, methods=["POST"])
 def webhook_handler():
     if request.method == "POST":
         message = request.get_json(force=True)
@@ -86,7 +85,7 @@ def webhook_handler():
 @app.route("/set_webhook", methods=["GET"])
 def set_webhook():
     print("Host URL: " + request.host_url)
-    s = bot.setWebhook(request.host_url + TELEGRAM_HOOK)
+    s = bot.setWebhook(request.host_url + settings.TELEGRAM_HOOK)
     if s:
         return "webhook setup ok"
     else:
@@ -95,7 +94,7 @@ def set_webhook():
 
 def decode_auth_token(auth_token):
     try:
-        jwt.decode(auth_token, EXTERNAL_ENDPOINT_KEY, algorithms=["HS256"])
+        jwt.decode(auth_token, settings.EXTERNAL_ENDPOINT_KEY, algorithms=["HS256"])
     except Exception as e:
         print(str(e))
         return False
@@ -279,9 +278,9 @@ def google_search(search_terms):
             "https://www.googleapis.com/customsearch/v1?q="
             + search_terms
             + "&key="
-            + GOOGLE_SEARCH_KEY
+            + settings.GOOGLE_SEARCH_KEY
             + "&cx="
-            + GOOGLE_SEARCH_CX
+            + settings.GOOGLE_SEARCH_CX
             + "&searchType="
             + searchType
             + "&gl="
