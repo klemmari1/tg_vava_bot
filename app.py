@@ -338,7 +338,7 @@ def request_gpt3(request: str):
             engine="text-davinci-001",
             prompt=f"{request}\nVavaBot:",
             temperature=0,
-            max_tokens=64,
+            max_tokens=1000,
             top_p=1.0,
             frequency_penalty=0.5,
             presence_penalty=0.0,
