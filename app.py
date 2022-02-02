@@ -56,11 +56,11 @@ bot = tgbot.TgbotConnection(settings.TELEGRAM_TOKEN)
 
 
 error_images = [
-    "https://miro.medium.com/max/1400/1*pUEZd8z__1p-7ICIO1NZFA.png",
+    "https://github.com/klemmari1/tg_vava_bot/raw/master/images/error.png",
 ]
 
 not_found_images = [
-    "https://howfix.net/wp-content/uploads/2018/02/sIaRmaFSMfrw8QJIBAa8mA-article.png",
+    "https://github.com/klemmari1/tg_vava_bot/raw/master/images/not_found.png",
 ]
 
 not_found_captions = [
