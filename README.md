@@ -14,9 +14,9 @@ App uses Telegram Bot API for communication with Telegram and Google Search API 
 
 /ask - Ask questions or talk to VavaBot (Using GPT-3 https://openai.com/blog/openai-api/)
 
-/subscribe - Subscribe chat to sale alerts
+/subscribe - Subscribe chat to bargain alerts
 
-/unsubscribe - Unsubscribe chat from sale alerts
+/unsubscribe - Unsubscribe chat from bargain alerts
 
 /help - Show this help message
 ```

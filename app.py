@@ -11,9 +11,9 @@
 
 /ask \- Ask questions or talk to VavaBot
 
-/subscribe \- Subscribe chat to sale alerts
+/subscribe \- Subscribe chat to bargain alerts
 
-/unsubscribe \- Unsubscribe chat from sale alerts
+/unsubscribe \- Unsubscribe chat from bargain alerts
 
 /help \- Show this help message
 """  # noqa
@@ -248,9 +248,9 @@ def cmd_subscribe(query, chat_id):
         chat = Chat(id=chat_id)
         chat.subscribe()
 
-        text = "Subscribed to sale alerts!"
+        text = "Subscribed to bargain alerts!"
     else:
-        text = "Chat already subscribed to sale alerts!"
+        text = "Chat already subscribed to bargain alerts!"
 
     bot.sendMessage(
         chat_id=chat_id,
@@ -264,9 +264,9 @@ def cmd_unsubscribe(query, chat_id):
     if chat:
         chat.unsubscribe()
 
-        text = "Unsubscribed from sale alerts!"
+        text = "Unsubscribed from bargain alerts!"
     else:
-        text = "Chat is not subscribed to sale alerts!"
+        text = "Chat is not subscribed to bargain alerts!"
     bot.sendMessage(
         chat_id=chat_id,
         text=text,
