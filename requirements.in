@@ -6,6 +6,7 @@ flask-sqlalchemy
 gunicorn
 isort
 jinja2
+openai
 pip-tools
 psycopg2-binary
 pyjwt

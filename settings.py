@@ -14,3 +14,5 @@ GOOGLE_SEARCH_CX = os.getenv("G_CX", "test")
 EXTERNAL_ENDPOINT_KEY = os.getenv("EXTERNAL_ENDPOINT_KEY", "test")
 
 SENTRY_DSN = os.getenv("SENTRY_DSN", "")
+
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")

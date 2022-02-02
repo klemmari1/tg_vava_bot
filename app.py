@@ -9,6 +9,8 @@
 
 /inspis \- Generate a random inspirational image
 
+/ask \- Ask questions or talk to VavaBot
+
 /subscribe \- Subscribe chat to sale alerts
 
 /unsubscribe \- Unsubscribe chat from sale alerts
@@ -21,6 +23,7 @@ import random
 import urllib
 
 import jwt
+import openai
 import requests
 import sentry_sdk
 from bs4 import BeautifulSoup
@@ -137,6 +140,7 @@ def handle_message(msg):
             "/img": cmd_img,
             "/puppu": cmd_puppu,
             "/inspis": cmd_inspis,
+            "/ask": cmd_ask,
             "/subscribe": cmd_subscribe,
             "/unsubscribe": cmd_unsubscribe,
             "/help": cmd_help,
@@ -323,6 +327,34 @@ def not_found(query, chat_id):
         chat_id=chat_id,
         photo=random.choice(not_found_images),
         caption=random.choice(not_found_captions),
+    )
+
+
+def request_gpt3(request: str):
+    openai.api_key = settings.OPENAI_API_KEY
+
+    try:
+        response = openai.Completion.create(
+            engine="text-davinci-001",
+            prompt=f"{request}\nVavaBot:",
+            temperature=0,
+            max_tokens=64,
+            top_p=1.0,
+            frequency_penalty=0.5,
+            presence_penalty=0.0,
+        )
+        response_text = response["choices"][0]["text"]
+    except:
+        return "Error occurred while requesting GPT3"
+
+    return response_text
+
+
+def cmd_ask(query, chat_id):
+    gpt3_response = request_gpt3(query)
+    bot.sendMessage(
+        chat_id=chat_id,
+        text=gpt3_response,
     )
 
 
