@@ -337,15 +337,15 @@ def request_gpt3(request: str):
         response = openai.Completion.create(
             engine="text-davinci-001",
             prompt=f"{request}\nVavaBot:",
-            temperature=0,
-            max_tokens=1000,
+            temperature=0.9,
+            max_tokens=200,
             top_p=1.0,
             frequency_penalty=0.5,
-            presence_penalty=0.0,
+            presence_penalty=0.5,
         )
         response_text = response["choices"][0]["text"]
     except:
-        return "Error occurred while requesting GPT3"
+        return "Error occurred while requesting GPT-3"
 
     return response_text
 
