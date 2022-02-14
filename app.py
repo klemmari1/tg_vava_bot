@@ -19,6 +19,7 @@
 """  # noqa
 
 import json
+import logging
 import random
 import urllib
 
@@ -99,7 +100,7 @@ def decode_auth_token(auth_token):
     try:
         jwt.decode(auth_token, settings.EXTERNAL_ENDPOINT_KEY, algorithms=["HS256"])
     except Exception as e:
-        print(str(e))
+        logging.exception(f"Exception while decoding auth token: {str(e)}")
         return False
     return True
 
@@ -121,9 +122,10 @@ def send_alert():
             text=message,
             disable_web_page_preview=True,
         )
-        print("SEND ALERT:")
-        print(response.status_code)
-        print(response.content)
+        if response:
+            print("SEND ALERT:")
+            print(response.status_code)
+            print(response.content)
 
     return "OK"
 
@@ -172,7 +174,7 @@ def handle_inline_query(inline_query):
                 response = bot.sendInlineResponse(
                     inline_query_id=inline_query_id, items=items
                 )
-                if response.status_code != 200:
+                if response and response.status_code != 200:
                     print("Error sending inline response: " + str(response.text))
             else:
                 print(
@@ -201,7 +203,7 @@ def cmd_img(query, chat_id):
     for item in items:
         url = item["link"]
         response = bot.sendPhoto(chat_id=chat_id, photo=url)
-        if response.status_code != 200:
+        if response and response.status_code != 200:
             print(str(response))
         else:
             break
@@ -210,7 +212,7 @@ def cmd_img(query, chat_id):
 def cmd_puppu(query, chat_id):
     query = urllib.parse.quote_plus(query, safe="", encoding="utf-8", errors=None)
     url = "http://puppulausegeneraattori.fi/?avainsana=" + query
-    response = urllib.request.urlopen(url).read()
+    response = urllib.request.urlopen(url, timeout=settings.REQUEST_TIMEOUT).read()
     soup = BeautifulSoup(response, "html.parser")
     text = soup.find("p", {"class": "lause"})
     text = text.contents[0]
@@ -225,7 +227,7 @@ def cmd_inspis(query, chat_id):
         "AppleWebKit/537.36 (KHTML, like Gecko)"
         "Chrome/50.0.2661.102 Safari/537.36"
     }
-    response = requests.get(url, headers=headers)
+    response = requests.get(url, headers=headers, timeout=settings.REQUEST_TIMEOUT)
     url = response.content.decode("utf-8")
     print(url)
     bot.sendPhoto(chat_id=chat_id, photo=url)
@@ -290,7 +292,7 @@ def google_search(search_terms):
             + "&gl="
             + gl
         )
-        contents = requests.get(url).text
+        contents = requests.get(url, timeout=settings.REQUEST_TIMEOUT).text
         json_response = json.loads(contents)
         if "items" in json_response:
             return json_response["items"]
@@ -299,11 +301,8 @@ def google_search(search_terms):
                 if "billing" in json_response["error"]["message"]:
                     return -1
         return None
-    except urllib.error.HTTPError as e:
-        err = e.fp.read()
-        print(str(err))
     except Exception as e:
-        print("Exception: " + str(e))
+        logging.exception("Exception while processing google search: " + str(e))
         return -2
 
 
@@ -344,7 +343,8 @@ def request_gpt3(request: str):
             presence_penalty=0.5,
         )
         response_text = response["choices"][0]["text"]
-    except:
+    except Exception as e:
+        logging.exception(f"Exception while processing GPT-3: {str(e)}")
         return "Error occurred while requesting GPT-3"
 
     return response_text

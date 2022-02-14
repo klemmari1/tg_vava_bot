@@ -1,13 +1,17 @@
 # -*- encoding: utf8 -*-
 
 import json
+import logging
+import time
 import uuid
 
 import requests
 
+import settings
+
 
 class TgbotConnection:
-    REQUEST_TIMEOUT = 30
+    REQUEST_TIMEOUT = settings.REQUEST_TIMEOUT
 
     def __init__(self, token):
         self.token = token
@@ -17,27 +21,23 @@ class TgbotConnection:
 
     def makeRequest(self, reqname, **params):
         response = None
-        try:
-            response = requests.get(
-                self.apiurl(reqname), params=params, timeout=self.REQUEST_TIMEOUT
-            )
-        except requests.exceptions.ConnectionError as e:
-            print(
-                f"Connection error ({e}) for  {reqname}, params: {str(params)}"
-            )
-            raise e
-        except requests.exceptions.Timeout as e:
-            print(
-                f"Timeout error ({e}) for  {reqname}, params: {str(params)}"
-            )
-            raise e
-        except Exception as e:
-            print(
-                f"Unknown error ({e}) for  {reqname}, params: {str(params)}"
-            )
-            raise e
+        retries = 0
+        while retries <= 3:
+            try:
+                response = requests.get(
+                    self.apiurl(reqname), params=params, timeout=self.REQUEST_TIMEOUT
+                )
+            except Exception as e:
+                logging.exception(
+                    f"Exception occurred ({str(e)}) for request: {reqname}, params: {str(params)}, retries: {retries}"
+                )
+                time.sleep(3)
+            else:
+                response.encoding = "utf-8"
+                break
 
-        response.encoding = "utf-8"
+            retries += 1
+
         return response
 
     def sendMessage(self, chat_id, text, **params):

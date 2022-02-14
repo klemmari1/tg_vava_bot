@@ -1,5 +1,7 @@
 import os
 
+REQUEST_TIMEOUT = 15
+
 # Environment variables
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///app.db")
 
