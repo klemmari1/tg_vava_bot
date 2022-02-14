@@ -16,24 +16,29 @@ class TgbotConnection:
         return "https://api.telegram.org/bot{}/{}".format(self.token, method)
 
     def makeRequest(self, reqname, **params):
-        retries = 0
-        while True:
-            retries += 1
-            try:
-                response = requests.get(
-                    self.apiurl(reqname), params=params, timeout=self.REQUEST_TIMEOUT
-                )
-            except requests.exceptions.ConnectionError as ex:
-                print(
-                    "Connection error ({}) for  {} (try #{}), params: {}".format(
-                        ex, reqname, retries, str(params)
-                    )
-                )
-                continue
-            except requests.exceptions.Timeout:
-                continue
-            response.encoding = "utf-8"
-            return response
+        response = None
+        try:
+            response = requests.get(
+                self.apiurl(reqname), params=params, timeout=self.REQUEST_TIMEOUT
+            )
+        except requests.exceptions.ConnectionError as e:
+            print(
+                f"Connection error ({e}) for  {reqname}, params: {str(params)}"
+            )
+            raise e
+        except requests.exceptions.Timeout as e:
+            print(
+                f"Timeout error ({e}) for  {reqname}, params: {str(params)}"
+            )
+            raise e
+        except Exception as e:
+            print(
+                f"Unknown error ({e}) for  {reqname}, params: {str(params)}"
+            )
+            raise e
+
+        response.encoding = "utf-8"
+        return response
 
     def sendMessage(self, chat_id, text, **params):
         return self.makeRequest("sendMessage", chat_id=chat_id, text=text, **params)
