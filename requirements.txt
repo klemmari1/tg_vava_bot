@@ -27,13 +27,13 @@ et-xmlfile==1.1.0
     # via openpyxl
 flake8==3.9.2
     # via -r requirements.in
-flask-sqlalchemy==2.5.1
-    # via -r requirements.in
 flask==2.0.1
     # via
     #   -r requirements.in
     #   flask-sqlalchemy
     #   sentry-sdk
+flask-sqlalchemy==2.5.1
+    # via -r requirements.in
 gunicorn==20.1.0
     # via -r requirements.in
 idna==2.10
@@ -58,9 +58,9 @@ openai==0.13.0
     # via -r requirements.in
 openpyxl==3.0.9
     # via openai
-pandas-stubs==1.2.0.47
-    # via openai
 pandas==1.4.0
+    # via openai
+pandas-stubs==1.2.0.47
     # via openai
 pathspec==0.8.1
     # via black
@@ -74,7 +74,7 @@ pycodestyle==2.7.0
     # via flake8
 pyflakes==2.3.1
     # via flake8
-pyjwt==2.1.0
+pyjwt==2.4.0
     # via -r requirements.in
 python-dateutil==2.8.2
     # via pandas
