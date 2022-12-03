@@ -8,7 +8,7 @@ if os.path.exists(".env"):
 REQUEST_TIMEOUT = 30
 
 # Environment variables
-PORT = os.getenv("PORT", 5003)
+PORT = os.getenv("PORT", 5002)
 
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///app.db")
 
