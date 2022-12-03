@@ -1,8 +1,15 @@
 import os
 
+from dotenv import load_dotenv
+
+if os.path.exists(".env"):
+    load_dotenv()
+
 REQUEST_TIMEOUT = 15
 
 # Environment variables
+PORT = os.getenv("PORT", 5003)
+
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///app.db")
 
 TELEGRAM_TOKEN = os.getenv("TOKEN", "test")
