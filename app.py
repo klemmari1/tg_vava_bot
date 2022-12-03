@@ -74,7 +74,7 @@ not_found_captions = [
 ]
 
 
-def long_poll_telegram():
+def poll_for_updates():
     with app.app_context():
 
         update_id = 0
@@ -398,7 +398,7 @@ def cmd_ask(query, chat_id):
     )
 
 
-thread = threading.Thread(target=long_poll_telegram)
+thread = threading.Thread(target=poll_for_updates)
 thread.start()
 
 if __name__ == "__main__":
