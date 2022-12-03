@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 if os.path.exists(".env"):
     load_dotenv()
 
-REQUEST_TIMEOUT = 15
+REQUEST_TIMEOUT = 30
 
 # Environment variables
 PORT = os.getenv("PORT", 5003)

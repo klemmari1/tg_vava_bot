@@ -81,7 +81,7 @@ def long_poll_telegram():
 
         while True:
             # Send a request to the server with the last ID we received
-            response = bot.makeRequest("getUpdates", offset=update_id, timeout=60)
+            response = bot.makeRequest("getUpdates", offset=update_id, timeout=20)
 
             # If we received new data, process it
             if response.status_code == 200:
