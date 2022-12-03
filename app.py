@@ -21,6 +21,8 @@
 import json
 import logging
 import random
+import threading
+import time
 import urllib
 
 import jwt
@@ -72,6 +74,35 @@ not_found_captions = [
 ]
 
 
+def long_poll_telegram():
+    with app.app_context():
+
+        update_id = 0
+
+        while True:
+            # Send a request to the server with the last ID we received
+            response = bot.makeRequest("getUpdates", offset=update_id, timeout=60)
+
+            # If we received new data, process it
+            if response.status_code == 200:
+                response_json = response.json()
+                updates = response_json.get("result", None)
+
+                for update in updates:
+                    print("Incoming request:" + str(update))
+                    if "inline_query" in update:
+                        inline_query = update["inline_query"]
+                        handle_inline_query(inline_query)
+                    else:
+                        msg = update.get("message", update.get("edited_message", None))
+                        handle_message(msg)
+
+                    update_id = int(update.get("update_id", 0)) + 1
+            else:
+                # If the server did not respond with new data, wait for a while before sending another request
+                time.sleep(5)
+
+
 @app.route("/" + settings.TELEGRAM_HOOK, methods=["POST"])
 def webhook_handler():
     if request.method == "POST":
@@ -94,6 +125,15 @@ def set_webhook():
         return "webhook setup ok"
     else:
         return "webhook setup failed"
+
+
+@app.route("/delete_webhook", methods=["GET"])
+def delete_webhook():
+    response = bot.makeRequest("deleteWebhook")
+    if response:
+        return "webhook delete ok"
+    else:
+        return "webhook delete failed"
 
 
 def decode_auth_token(auth_token):
@@ -357,6 +397,9 @@ def cmd_ask(query, chat_id):
         text=gpt3_response,
     )
 
+
+thread = threading.Thread(target=long_poll_telegram)
+thread.start()
 
 if __name__ == "__main__":
     app.run(debug=True, port=settings.PORT)
