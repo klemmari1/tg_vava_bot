@@ -28,8 +28,8 @@ class TgbotConnection:
                     self.apiurl(reqname), params=params, timeout=self.REQUEST_TIMEOUT
                 )
             except Exception as e:
-                logging.exception(
-                    f"Exception occurred ({str(e)}) for request: {reqname}, params: {str(params)}, retries: {retries}"
+                logging.warning(
+                    f"Exception occurred: ({str(e)}) for request: {reqname}, params: {str(params)}, retries: {retries}"
                 )
                 time.sleep(3)
             else:

@@ -84,7 +84,7 @@ def poll_for_updates():
             response = bot.makeRequest("getUpdates", offset=update_id, timeout=20)
 
             # If we received new data, process it
-            if response.status_code == 200:
+            if response and response.status_code == 200:
                 response_json = response.json()
                 updates = response_json.get("result", None)
 
