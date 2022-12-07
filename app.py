@@ -384,7 +384,7 @@ def request_gpt3(request: str):
         )
         response_text = response["choices"][0]["text"]
     except Exception as e:
-        logging.exception(f"Exception while processing GPT-3: {str(e)}")
+        logging.warning(f"Exception while processing GPT-3: {str(e)}")
         return "Error occurred while requesting GPT-3"
 
     return response_text
