@@ -4,8 +4,6 @@
 #
 #    pip-compile requirements.in
 #
---extra-index-url https://www.piwheels.org/simple
-
 beautifulsoup4==4.11.1
     # via -r requirements.in
 black==22.10.0
@@ -14,7 +12,7 @@ blinker==1.5
     # via sentry-sdk
 build==0.9.0
     # via pip-tools
-certifi==2022.9.24
+certifi==2022.12.7
     # via
     #   requests
     #   sentry-sdk
@@ -36,6 +34,8 @@ flask==2.2.2
     #   sentry-sdk
 flask-sqlalchemy==3.0.2
     # via -r requirements.in
+greenlet==2.0.1
+    # via sqlalchemy
 gunicorn==20.1.0
     # via -r requirements.in
 idna==3.4
