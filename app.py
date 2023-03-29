@@ -373,7 +373,7 @@ def request_gpt(request: str):
     openai.api_key = settings.OPENAI_API_KEY
 
     try:
-        response = openai.Completion.create(
+        response = openai.ChatCompletion.create(
             engine="gpt-4",
             prompt=f"{request}\nVavaBot:",
             temperature=0.9,
