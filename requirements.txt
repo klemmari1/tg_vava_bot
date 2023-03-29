@@ -4,43 +4,57 @@
 #
 #    pip-compile requirements.in
 #
-beautifulsoup4==4.11.1
+aiohttp==3.8.4
+    # via openai
+aiosignal==1.3.1
+    # via aiohttp
+async-timeout==4.0.2
+    # via aiohttp
+attrs==22.2.0
+    # via aiohttp
+beautifulsoup4==4.12.0
     # via -r requirements.in
-black==22.10.0
+black==23.3.0
     # via -r requirements.in
 blinker==1.5
     # via sentry-sdk
-build==0.9.0
+build==0.10.0
     # via pip-tools
-certifi==2022.9.24
+certifi==2022.12.7
     # via
     #   requests
     #   sentry-sdk
-charset-normalizer==2.1.1
-    # via requests
+charset-normalizer==3.1.0
+    # via
+    #   aiohttp
+    #   requests
 click==8.1.3
     # via
     #   black
     #   flask
     #   pip-tools
-et-xmlfile==1.1.0
-    # via openpyxl
 flake8==6.0.0
     # via -r requirements.in
-flask==2.2.2
+flask==2.2.3
     # via
     #   -r requirements.in
     #   flask-sqlalchemy
     #   sentry-sdk
-flask-sqlalchemy==3.0.2
+flask-sqlalchemy==3.0.3
     # via -r requirements.in
+frozenlist==1.3.3
+    # via
+    #   aiohttp
+    #   aiosignal
 greenlet==2.0.2
     # via sqlalchemy
 gunicorn==20.1.0
     # via -r requirements.in
 idna==3.4
-    # via requests
-isort==5.10.1
+    # via
+    #   requests
+    #   yarl
+isort==5.12.0
     # via -r requirements.in
 itsdangerous==2.1.2
     # via flask
@@ -48,35 +62,29 @@ jinja2==3.1.2
     # via
     #   -r requirements.in
     #   flask
-markupsafe==2.1.1
+markupsafe==2.1.2
     # via
     #   jinja2
     #   werkzeug
 mccabe==0.7.0
     # via flake8
-mypy-extensions==0.4.3
-    # via black
-numpy==1.23.5
+multidict==6.0.4
     # via
-    #   openai
-    #   pandas
-openai==0.25.0
-    # via -r requirements.in
-openpyxl==3.0.10
-    # via openai
-packaging==21.3
-    # via build
-pandas==1.5.2
-    # via openai
-pandas-stubs==1.5.2.221124
-    # via openai
-pathspec==0.10.2
+    #   aiohttp
+    #   yarl
+mypy-extensions==1.0.0
     # via black
-pep517==0.13.0
-    # via build
-pip-tools==6.11.0
+openai==0.27.2
     # via -r requirements.in
-platformdirs==2.5.4
+packaging==23.0
+    # via
+    #   black
+    #   build
+pathspec==0.11.1
+    # via black
+pip-tools==6.12.3
+    # via -r requirements.in
+platformdirs==3.2.0
     # via black
 psycopg2-binary==2.9.5
     # via -r requirements.in
@@ -86,44 +94,38 @@ pyflakes==3.0.1
     # via flake8
 pyjwt==2.6.0
     # via -r requirements.in
-pyparsing==3.0.9
-    # via packaging
-python-dateutil==2.8.2
-    # via pandas
-python-dotenv==0.21.0
+pyproject-hooks==1.0.0
+    # via build
+python-dotenv==1.0.0
     # via -r requirements.in
-pytz==2022.6
-    # via pandas
-requests==2.28.1
+requests==2.28.2
     # via
     #   -r requirements.in
     #   openai
-sentry-sdk[flask]==1.11.1
+sentry-sdk[flask]==1.18.0
     # via -r requirements.in
-six==1.16.0
-    # via python-dateutil
-soupsieve==2.3.2.post1
+soupsieve==2.4
     # via beautifulsoup4
-sqlalchemy==1.4.44
+sqlalchemy==2.0.7
     # via
     #   -r requirements.in
     #   flask-sqlalchemy
-tqdm==4.64.1
+tqdm==4.65.0
     # via openai
-types-pytz==2022.6.0.1
-    # via pandas-stubs
-typing-extensions==4.4.0
-    # via openai
-urllib3==1.26.13
+typing-extensions==4.5.0
+    # via sqlalchemy
+urllib3==1.26.15
     # via
     #   requests
     #   sentry-sdk
-werkzeug==2.2.2
+werkzeug==2.2.3
     # via
     #   -r requirements.in
     #   flask
-wheel==0.38.4
+wheel==0.40.0
     # via pip-tools
+yarl==1.8.2
+    # via aiohttp
 
 # The following packages are considered to be unsafe in a requirements file:
 # pip
