@@ -369,20 +369,18 @@ def not_found(query, chat_id):
     )
 
 
-def request_gpt(request: str):
+def request_gpt(query: str):
     openai.api_key = settings.OPENAI_API_KEY
 
     try:
         response = openai.ChatCompletion.create(
-            engine="gpt-4",
-            prompt=f"{request}\nVavaBot:",
-            temperature=0.9,
-            max_tokens=200,
-            top_p=1.0,
-            frequency_penalty=0.5,
-            presence_penalty=0.5,
+            model="gpt-4",
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant named VavaBot."},
+                {"role": "user", "content": query},
+            ]
         )
-        response_text = response["choices"][0]["text"]
+        response_text = response["choices"][0]["message"]["content"]
     except Exception as e:
         logging.warning(f"Exception while requesting GPT: {str(e)}")
         return "Error occurred while requesting GPT"
