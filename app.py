@@ -369,7 +369,7 @@ def not_found(query, chat_id):
     )
 
 
-def request_gpt3(request: str):
+def request_gpt(request: str):
     openai.api_key = settings.OPENAI_API_KEY
 
     try:
@@ -384,17 +384,17 @@ def request_gpt3(request: str):
         )
         response_text = response["choices"][0]["text"]
     except Exception as e:
-        logging.warning(f"Exception while requesting GPT-4: {str(e)}")
-        return "Error occurred while requesting GPT-4"
+        logging.warning(f"Exception while requesting GPT: {str(e)}")
+        return "Error occurred while requesting GPT"
 
     return response_text
 
 
 def cmd_ask(query, chat_id):
-    gpt3_response = request_gpt3(query)
+    gpt_response = request_gpt(query)
     bot.sendMessage(
         chat_id=chat_id,
-        text=gpt3_response,
+        text=gpt_response,
     )
 
 
