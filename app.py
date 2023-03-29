@@ -374,7 +374,7 @@ def request_gpt3(request: str):
 
     try:
         response = openai.Completion.create(
-            engine="text-davinci-001",
+            engine="gpt-4",
             prompt=f"{request}\nVavaBot:",
             temperature=0.9,
             max_tokens=200,
@@ -384,8 +384,8 @@ def request_gpt3(request: str):
         )
         response_text = response["choices"][0]["text"]
     except Exception as e:
-        logging.warning(f"Exception while processing GPT-3: {str(e)}")
-        return "Error occurred while requesting GPT-3"
+        logging.warning(f"Exception while requesting GPT-4: {str(e)}")
+        return "Error occurred while requesting GPT-4"
 
     return response_text
 
