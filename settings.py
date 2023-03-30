@@ -1,27 +1,32 @@
 import os
 
-from dotenv import load_dotenv
+from environs import Env
+
+env = Env()
 
 if os.path.exists(".env"):
-    load_dotenv()
+    env.read_env()  # read .env file, if it exists
+
 
 REQUEST_TIMEOUT = 30
 
 # Environment variables
-PORT = os.getenv("PORT", 5002)
+PORT = env("PORT", 5002)
 
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///app.db")
+DATABASE_URL = env("DATABASE_URL", "sqlite:///app.db")
 
-TELEGRAM_TOKEN = os.getenv("TOKEN", "test")
+TELEGRAM_TOKEN = env("TOKEN", "test")
 
-TELEGRAM_HOOK = os.getenv("HOOK", "test")
+TELEGRAM_HOOK = env("HOOK", "test")
 
-GOOGLE_SEARCH_KEY = os.getenv("G_KEY", "test")
+GOOGLE_SEARCH_KEY = env("G_KEY", "test")
 
-GOOGLE_SEARCH_CX = os.getenv("G_CX", "test")
+GOOGLE_SEARCH_CX = env("G_CX", "test")
 
-EXTERNAL_ENDPOINT_KEY = os.getenv("EXTERNAL_ENDPOINT_KEY", "test")
+EXTERNAL_ENDPOINT_KEY = env("EXTERNAL_ENDPOINT_KEY", "test")
 
-SENTRY_DSN = os.getenv("SENTRY_DSN", "")
+SENTRY_DSN = env("SENTRY_DSN", "")
 
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+OPENAI_API_KEY = env("OPENAI_API_KEY")
+
+OPENAI_CHAT_IDS = env.list("OPENAI_CHAT_IDS")

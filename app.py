@@ -11,6 +11,8 @@
 
 /ask \- Ask questions or talk to VavaBot
 
+/reset \- Reset VavaBot conversation history
+
 /subscribe \- Subscribe chat to bargain alerts
 
 /unsubscribe \- Unsubscribe chat from bargain alerts
@@ -74,9 +76,24 @@ not_found_captions = [
 ]
 
 
+OPENAI_CONVERSATION_HISTORY = {}
+
+
+def reset_conversation_history(chat_ids: list = []):
+    if chat_ids == []:
+        chat_ids = settings.OPENAI_CHAT_IDS
+
+    for openai_chat_id in chat_ids:
+        OPENAI_CONVERSATION_HISTORY[openai_chat_id] = [
+            {"role": "system", "content": "You are a helpful assistant named VavaBot."},
+        ]
+
+
+reset_conversation_history()
+
+
 def poll_for_updates():
     with app.app_context():
-
         update_id = 0
 
         while True:
@@ -89,7 +106,7 @@ def poll_for_updates():
                 updates = response_json.get("result", None)
 
                 for update in updates:
-                    print("Incoming request:" + str(update))
+                    logging.info("Incoming request:" + str(update))
                     if "inline_query" in update:
                         inline_query = update["inline_query"]
                         handle_inline_query(inline_query)
@@ -107,7 +124,7 @@ def poll_for_updates():
 def webhook_handler():
     if request.method == "POST":
         message = request.get_json(force=True)
-        print("Incoming request:" + str(message))
+        logging.info("Incoming request:" + str(message))
         if "inline_query" in message:
             inline_query = message["inline_query"]
             handle_inline_query(inline_query)
@@ -119,7 +136,7 @@ def webhook_handler():
 
 @app.route("/set_webhook", methods=["GET"])
 def set_webhook():
-    print("Host URL: " + request.host_url)
+    logging.info("Host URL: " + request.host_url)
     s = bot.setWebhook(request.host_url + settings.TELEGRAM_HOOK)
     if s:
         return "webhook setup ok"
@@ -163,9 +180,9 @@ def send_alert():
             disable_web_page_preview=True,
         )
         if response:
-            print("SEND ALERT:")
-            print(response.status_code)
-            print(response.content)
+            logging.info("SEND ALERT:")
+            logging.info(response.status_code)
+            logging.info(response.content)
 
     return "OK"
 
@@ -183,6 +200,7 @@ def handle_message(msg):
             "/puppu": cmd_puppu,
             "/inspis": cmd_inspis,
             "/ask": cmd_ask,
+            "/reset": cmd_reset,
             "/subscribe": cmd_subscribe,
             "/unsubscribe": cmd_unsubscribe,
             "/help": cmd_help,
@@ -196,9 +214,9 @@ def handle_message(msg):
         if "@" in cmdname:
             cmdname = cmdname.split("@")[0]
         if cmdname in commands:
-            print("command: " + str(cmdname))
-            print("args: " + str(args))
-            print("chat id: " + str(msg["chat"]["id"]))
+            logging.info("command: " + str(cmdname))
+            logging.info("args: " + str(args))
+            logging.info("chat id: " + str(msg["chat"]["id"]))
             commands[cmdname](args, msg["chat"]["id"])
 
 
@@ -207,17 +225,17 @@ def handle_inline_query(inline_query):
         query = inline_query["query"]
         if query != "":
             inline_query_id = inline_query["id"]
-            print("inline query id: " + str(inline_query_id))
-            print("inline query args: " + str(query))
+            logging.info("inline query id: " + str(inline_query_id))
+            logging.info("inline query args: " + str(query))
             items = google_search(query)
             if isinstance(items, list):
                 response = bot.sendInlineResponse(
                     inline_query_id=inline_query_id, items=items
                 )
                 if response and response.status_code != 200:
-                    print("Error sending inline response: " + str(response.text))
+                    logging.info("Error sending inline response: " + str(response.text))
             else:
-                print(
+                logging.info(
                     "Error getting images from Google search. Response: " + str(items)
                 )
 
@@ -244,7 +262,7 @@ def cmd_img(query, chat_id):
         url = item["link"]
         response = bot.sendPhoto(chat_id=chat_id, photo=url)
         if response and response.status_code != 200:
-            print(str(response))
+            logging.info(str(response))
         else:
             break
 
@@ -256,7 +274,7 @@ def cmd_puppu(query, chat_id):
     soup = BeautifulSoup(response, "html.parser")
     text = soup.find("p", {"class": "lause"})
     text = text.contents[0]
-    print(text)
+    logging.info(text)
     bot.sendMessage(chat_id=chat_id, text=text)
 
 
@@ -269,7 +287,7 @@ def cmd_inspis(query, chat_id):
     }
     response = requests.get(url, headers=headers, timeout=settings.REQUEST_TIMEOUT)
     url = response.content.decode("utf-8")
-    print(url)
+    logging.info(url)
     bot.sendPhoto(chat_id=chat_id, photo=url)
 
 
@@ -348,9 +366,9 @@ def google_search(search_terms):
 
 def test_img(query, chat_id):
     if query == "1":
-        print(daily_limit(query, chat_id))
+        logging.info(daily_limit(query, chat_id))
     elif query == "2":
-        print(not_found(query, chat_id))
+        logging.info(not_found(query, chat_id))
 
 
 def daily_limit(query, chat_id):
@@ -369,30 +387,54 @@ def not_found(query, chat_id):
     )
 
 
-def request_gpt(query: str):
+def request_gpt(query: str, chat_id: str):
     openai.api_key = settings.OPENAI_API_KEY
+
+    OPENAI_CONVERSATION_HISTORY[chat_id].append({"role": "user", "content": query})
 
     try:
         response = openai.ChatCompletion.create(
-            model="gpt-4",
-            messages=[
-                {"role": "system", "content": "You are a helpful assistant named VavaBot."},
-                {"role": "user", "content": query},
-            ]
+            model="gpt-4", messages=OPENAI_CONVERSATION_HISTORY[chat_id]
         )
         response_text = response["choices"][0]["message"]["content"]
     except Exception as e:
         logging.warning(f"Exception while requesting GPT: {str(e)}")
         return "Error occurred while requesting GPT"
 
+    OPENAI_CONVERSATION_HISTORY[chat_id].append(
+        {"role": "assistant", "content": response_text}
+    )
+
     return response_text
 
 
-def cmd_ask(query, chat_id):
-    gpt_response = request_gpt(query)
+def cmd_ask(query: str, chat_id: str):
+    if chat_id not in settings.OPENAI_CHAT_IDS:
+        bot.sendMessage(
+            chat_id=chat_id,
+            text="GPT-4 not enabled in this chat",
+        )
+        return
+    gpt_response = request_gpt(query, chat_id)
     bot.sendMessage(
         chat_id=chat_id,
         text=gpt_response,
+    )
+
+
+def cmd_reset(query: str, chat_id: str):
+    if chat_id not in settings.OPENAI_CHAT_IDS:
+        bot.sendMessage(
+            chat_id=chat_id,
+            text="GPT-4 not enabled in this chat",
+        )
+        return
+
+    reset_conversation_history([chat_id])
+
+    bot.sendMessage(
+        chat_id=chat_id,
+        text="GPT-4 chat history reset",
     )
 
 

@@ -12,7 +12,9 @@ App uses Telegram Bot API for communication with Telegram and Google Search API 
 
 /inspis - Generate a random inspirational image (From https://inspirobot.me/)
 
-/ask - Ask questions or talk to VavaBot (Using GPT-3 https://openai.com/blog/openai-api/)
+/ask - Ask questions or talk to VavaBot (Using GPT-4 https://openai.com/blog/openai-api/)
+
+/ask - Reset VavaBot conversation history (Using GPT-4 https://openai.com/blog/openai-api/)
 
 /subscribe - Subscribe chat to bargain alerts
 
