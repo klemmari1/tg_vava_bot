@@ -106,7 +106,7 @@ def poll_for_updates():
                 updates = response_json.get("result", None)
 
                 for update in updates:
-                    logging.info("Incoming request:" + str(update))
+                    app.logger.info("Incoming request:" + str(update))
                     if "inline_query" in update:
                         inline_query = update["inline_query"]
                         handle_inline_query(inline_query)
@@ -124,7 +124,7 @@ def poll_for_updates():
 def webhook_handler():
     if request.method == "POST":
         message = request.get_json(force=True)
-        logging.info("Incoming request:" + str(message))
+        app.logger.info("Incoming request:" + str(message))
         if "inline_query" in message:
             inline_query = message["inline_query"]
             handle_inline_query(inline_query)
@@ -136,7 +136,7 @@ def webhook_handler():
 
 @app.route("/set_webhook", methods=["GET"])
 def set_webhook():
-    logging.info("Host URL: " + request.host_url)
+    app.logger.info("Host URL: " + request.host_url)
     s = bot.setWebhook(request.host_url + settings.TELEGRAM_HOOK)
     if s:
         return "webhook setup ok"
@@ -157,7 +157,7 @@ def decode_auth_token(auth_token):
     try:
         jwt.decode(auth_token, settings.EXTERNAL_ENDPOINT_KEY, algorithms=["HS256"])
     except Exception as e:
-        logging.exception(f"Exception while decoding auth token: {str(e)}")
+        app.logger.exception(f"Exception while decoding auth token: {str(e)}")
         return False
     return True
 
@@ -180,9 +180,9 @@ def send_alert():
             disable_web_page_preview=True,
         )
         if response:
-            logging.info("SEND ALERT:")
-            logging.info(response.status_code)
-            logging.info(response.content)
+            app.logger.info("SEND ALERT:")
+            app.logger.info(response.status_code)
+            app.logger.info(response.content)
 
     return "OK"
 
@@ -214,9 +214,9 @@ def handle_message(msg):
         if "@" in cmdname:
             cmdname = cmdname.split("@")[0]
         if cmdname in commands:
-            logging.info("command: " + str(cmdname))
-            logging.info("args: " + str(args))
-            logging.info("chat id: " + str(msg["chat"]["id"]))
+            app.logger.info("command: " + str(cmdname))
+            app.logger.info("args: " + str(args))
+            app.logger.info("chat id: " + str(msg["chat"]["id"]))
             commands[cmdname](args, msg["chat"]["id"])
 
 
@@ -225,17 +225,17 @@ def handle_inline_query(inline_query):
         query = inline_query["query"]
         if query != "":
             inline_query_id = inline_query["id"]
-            logging.info("inline query id: " + str(inline_query_id))
-            logging.info("inline query args: " + str(query))
+            app.logger.info("inline query id: " + str(inline_query_id))
+            app.logger.info("inline query args: " + str(query))
             items = google_search(query)
             if isinstance(items, list):
                 response = bot.sendInlineResponse(
                     inline_query_id=inline_query_id, items=items
                 )
                 if response and response.status_code != 200:
-                    logging.info("Error sending inline response: " + str(response.text))
+                    app.logger.info("Error sending inline response: " + str(response.text))
             else:
-                logging.info(
+                app.logger.info(
                     "Error getting images from Google search. Response: " + str(items)
                 )
 
@@ -262,7 +262,7 @@ def cmd_img(query, chat_id):
         url = item["link"]
         response = bot.sendPhoto(chat_id=chat_id, photo=url)
         if response and response.status_code != 200:
-            logging.info(str(response))
+            app.logger.info(str(response))
         else:
             break
 
@@ -274,7 +274,7 @@ def cmd_puppu(query, chat_id):
     soup = BeautifulSoup(response, "html.parser")
     text = soup.find("p", {"class": "lause"})
     text = text.contents[0]
-    logging.info(text)
+    app.logger.info(text)
     bot.sendMessage(chat_id=chat_id, text=text)
 
 
@@ -287,7 +287,7 @@ def cmd_inspis(query, chat_id):
     }
     response = requests.get(url, headers=headers, timeout=settings.REQUEST_TIMEOUT)
     url = response.content.decode("utf-8")
-    logging.info(url)
+    app.logger.info(url)
     bot.sendPhoto(chat_id=chat_id, photo=url)
 
 
@@ -360,15 +360,15 @@ def google_search(search_terms):
                     return -1
         return None
     except Exception as e:
-        logging.exception("Exception while processing google search: " + str(e))
+        app.logger.exception("Exception while processing google search: " + str(e))
         return -2
 
 
 def test_img(query, chat_id):
     if query == "1":
-        logging.info(daily_limit(query, chat_id))
+        app.logger.info(daily_limit(query, chat_id))
     elif query == "2":
-        logging.info(not_found(query, chat_id))
+        app.logger.info(not_found(query, chat_id))
 
 
 def daily_limit(query, chat_id):
@@ -398,7 +398,7 @@ def request_gpt(query: str, chat_id: str):
         )
         response_text = response["choices"][0]["message"]["content"]
     except Exception as e:
-        logging.warning(f"Exception while requesting GPT: {str(e)}")
+        app.logger.warning(f"Exception while requesting GPT: {str(e)}")
         return "Error occurred while requesting GPT"
 
     OPENAI_CONVERSATION_HISTORY[chat_id].append(
