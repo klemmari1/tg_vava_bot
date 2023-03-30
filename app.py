@@ -104,7 +104,7 @@ def reset_conversation_history(chat_ids: list = []):
 
     for openai_chat_id in chat_ids:
         OPENAI_CONVERSATION_HISTORY[openai_chat_id] = [
-            {"role": "system", "content": "You are a helpful assistant named VavaBot."},
+            {"role": "system", "content": "You are a helpful assistant named VavaBot. You try to keep your answers short and to the point without rambling too much"},
         ]
 
 
