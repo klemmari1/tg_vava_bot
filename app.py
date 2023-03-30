@@ -21,11 +21,11 @@
 """  # noqa
 
 import json
-import logging
 import random
 import threading
 import time
 import urllib
+from logging.config import dictConfig
 
 import jwt
 import openai
@@ -38,6 +38,25 @@ from sentry_sdk.integrations.flask import FlaskIntegration
 import settings
 import tgbot
 from chats import Chat, db
+
+dictConfig(
+    {
+        "version": 1,
+        "formatters": {
+            "default": {
+                "format": "[%(asctime)s] %(levelname)s in %(module)s: %(message)s",
+            }
+        },
+        "handlers": {
+            "wsgi": {
+                "class": "logging.StreamHandler",
+                "stream": "ext://sys.stdout",
+                "formatter": "default",
+            }
+        },
+        "root": {"level": "INFO", "handlers": ["wsgi"]},
+    }
+)
 
 app = Flask(__name__)
 
@@ -233,7 +252,9 @@ def handle_inline_query(inline_query):
                     inline_query_id=inline_query_id, items=items
                 )
                 if response and response.status_code != 200:
-                    app.logger.info("Error sending inline response: " + str(response.text))
+                    app.logger.info(
+                        "Error sending inline response: " + str(response.text)
+                    )
             else:
                 app.logger.info(
                     "Error getting images from Google search. Response: " + str(items)
