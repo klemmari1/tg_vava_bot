@@ -233,10 +233,11 @@ def handle_message(msg):
         if "@" in cmdname:
             cmdname = cmdname.split("@")[0]
         if cmdname in commands:
+            chat_id = str(msg["chat"]["id"])
             app.logger.info("command: " + str(cmdname))
             app.logger.info("args: " + str(args))
-            app.logger.info("chat id: " + str(msg["chat"]["id"]))
-            commands[cmdname](args, msg["chat"]["id"])
+            app.logger.info("chat id: " + chat_id)
+            commands[cmdname](args, chat_id)
 
 
 def handle_inline_query(inline_query):
