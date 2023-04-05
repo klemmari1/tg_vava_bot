@@ -129,7 +129,10 @@ def query(
 
 def wikipedia_query(q: str) -> str:
     results = wikipedia.search(q)
-    return wikipedia.summary(results[0])
+    if len(results) > 0:
+        return wikipedia.summary(results[0])
+    else:
+        return "No search results"
 
 
 def lolwiki(q: str) -> str:
