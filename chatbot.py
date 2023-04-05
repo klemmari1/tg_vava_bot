@@ -7,6 +7,7 @@ import openai
 import requests
 
 import settings
+import wikipedia
 
 openai.api_key = settings.OPENAI_API_KEY
 
@@ -110,7 +111,7 @@ def query(
             return result
 
 
-def wikipedia(q: str) -> str:
+def wikipedia_query(q: str) -> str:
     results = wikipedia.search(q)
     return wikipedia.summary(results[0])
 
@@ -144,6 +145,6 @@ def calculate(q: str) -> str:
 
 known_actions = {
     "calculate": calculate,
-    "wikipedia": wikipedia,
+    "wikipedia": wikipedia_query,
     "lolwiki": lolwiki,
 }
