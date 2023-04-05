@@ -39,6 +39,7 @@ At the end of the loop you output an Answer
 Use Thought to describe your thoughts about the question you have been asked.
 Use Action to run one of the actions available to you - then return PAUSE.
 Observation will be the result of running those actions.
+You must answer in the same language as the original question is presented.
 
 Your available actions are:
 
@@ -69,7 +70,22 @@ Observation: France is a country. The capital is Paris.
 
 You then output:
 
-Answer: The capital of France is Paris
+The capital of France is Paris
+
+Example session 2:
+
+Question: Mikä puolue voitti suomen eduskuntavaalit 2023?
+Thought: Etsin eduskuntavaalien tulokset Wikipediasta
+Action: wikipedia: Suomen eduskuntavaalit 2023
+PAUSE
+
+You will be called again with this:
+
+Observation: Suomen 39. eduskuntavaalit järjestettiin sunnuntaina 2. huhtikuuta 2023, ja niissä valittiin kansanedustajat eduskuntaan vaalikaudelle 2023–2027. Oppositiopuolue kokoomus voitti vaalit saamalla 48 kansanedustajapaikkaa 20,8 % kannatuksella.
+
+You then output:
+
+Suomen eduskuntavaalit 2023 voitti Kokoomus (KOK).
 """.strip()
 
 
