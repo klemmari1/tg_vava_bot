@@ -5,9 +5,9 @@ import re
 
 import openai
 import requests
+import wikipedia
 
 import settings
-import wikipedia
 
 openai.api_key = settings.OPENAI_API_KEY
 
@@ -83,7 +83,7 @@ PAUSE
 
 You will be called again with this:
 
-Observation: Suomen 39. eduskuntavaalit järjestettiin sunnuntaina 2. huhtikuuta 2023, ja niissä valittiin kansanedustajat eduskuntaan vaalikaudelle 2023–2027. Oppositiopuolue kokoomus voitti vaalit saamalla 48 kansanedustajapaikkaa 20,8 % kannatuksella.
+Observation: Suomen 39. eduskuntavaalit järjestettiin sunnuntaina 2. huhtikuuta 2023, ja niissä valittiin kansanedustajat eduskuntaan vaalikaudelle 2023-2027. Oppositiopuolue kokoomus voitti vaalit saamalla 48 kansanedustajapaikkaa 20,8 % kannatuksella.
 
 You then output:
 
@@ -96,34 +96,40 @@ action_re = re.compile("^Action: (\w+): (.*)$")
 
 def query(
     question,
+    bot=ChatBot(prompt),
     logger=None,
     max_turns=5,
 ) -> str:
     i = 0
-    bot = ChatBot(prompt)
     next_prompt = question
     while i < max_turns:
         i += 1
         result = bot(next_prompt)
+
         if logger:
             logger.info(result)
         else:
             print(result)
+
         actions = [action_re.match(a) for a in result.split("\n") if action_re.match(a)]
         if actions:
             # There is an action to run
             action, action_input = actions[0].groups()
             if action not in known_actions:
                 raise Exception("Unknown action: {}: {}".format(action, action_input))
+
             if logger:
                 logger.info(" -- running {} {}".format(action, action_input))
             else:
                 print(" -- running {} {}".format(action, action_input))
+
             observation = known_actions[action](action_input)
+
             if logger:
                 logger.info(" -- sending observation...")
             else:
                 print(" -- sending observation...")
+
             next_prompt = "Observation: {}".format(observation)
         else:
             return result

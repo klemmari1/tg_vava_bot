@@ -104,12 +104,7 @@ def reset_conversation_history(chat_ids: list = []):
         chat_ids = settings.OPENAI_CHAT_IDS
 
     for openai_chat_id in chat_ids:
-        OPENAI_CONVERSATION_HISTORY[openai_chat_id] = [
-            {
-                "role": "system",
-                "content": "You are a helpful assistant named VavaBot. You try to keep your answers short and to the point without rambling too much",
-            },
-        ]
+        OPENAI_CONVERSATION_HISTORY[openai_chat_id] = chatbot.ChatBot(chatbot.prompt)
 
 
 reset_conversation_history()
@@ -416,8 +411,6 @@ def not_found(query, chat_id):
 def request_gpt(query: str, chat_id: str):
     openai.api_key = settings.OPENAI_API_KEY
 
-    OPENAI_CONVERSATION_HISTORY[chat_id].append({"role": "user", "content": query})
-
     try:
         response = openai.ChatCompletion.create(
             model="gpt-4", messages=OPENAI_CONVERSATION_HISTORY[chat_id]
@@ -426,10 +419,6 @@ def request_gpt(query: str, chat_id: str):
     except Exception as e:
         app.logger.warning(f"Exception while requesting GPT: {str(e)}")
         return "Error occurred while requesting GPT"
-
-    OPENAI_CONVERSATION_HISTORY[chat_id].append(
-        {"role": "assistant", "content": response_text}
-    )
 
     return response_text
 
@@ -441,7 +430,9 @@ def cmd_ask(query: str, chat_id: str):
             text="GPT-4 not enabled in this chat",
         )
         return
-    gpt_response = chatbot.query(query, app.logger)
+    gpt_response = chatbot.query(
+        query, OPENAI_CONVERSATION_HISTORY[chat_id], app.logger
+    )
     bot.sendMessage(
         chat_id=chat_id,
         text=gpt_response,
