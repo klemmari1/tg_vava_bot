@@ -137,7 +137,7 @@ def query(
 
 def wikipedia_query(q: str) -> str:
     results = wikipedia.search(q)
-    if len(results) > 0:
+    if len(results) > 0 and all([w in results[0] for w in q.split(" ")]):
         return wikipedia.summary(results[0])
     else:
         return "No search results"
