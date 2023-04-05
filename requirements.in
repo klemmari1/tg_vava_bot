@@ -5,6 +5,7 @@ flake8
 flask
 flask-sqlalchemy
 gunicorn
+httpx
 isort
 jinja2
 openai
