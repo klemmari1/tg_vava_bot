@@ -77,27 +77,37 @@ action_re = re.compile("^Action: (\w+): (.*)$")
 
 def query(
     question,
-    logger,
-    max_turns=7,
+    logger=None,
+    max_turns=5,
 ) -> str:
     i = 0
-    bot = ChatBot(logger, prompt)
+    bot = ChatBot(prompt)
     next_prompt = question
     while i < max_turns:
         i += 1
         result = bot(next_prompt)
-        logger.Info(result)
+        if logger:
+            logger.info(result)
+        else:
+            print(result)
         actions = [action_re.match(a) for a in result.split("\n") if action_re.match(a)]
         if actions:
             # There is an action to run
             action, action_input = actions[0].groups()
             if action not in known_actions:
                 raise Exception("Unknown action: {}: {}".format(action, action_input))
-            logger.Info(" -- running {} {}".format(action, action_input))
+            if logger:
+                logger.info(" -- running {} {}".format(action, action_input))
+            else:
+                print(" -- running {} {}".format(action, action_input))
             observation = known_actions[action](action_input)
-            logger.Info(" -- sending observation...")
+            if logger:
+                logger.info(" -- sending observation...")
+            else:
+                print(" -- sending observation...")
             next_prompt = "Observation: {}".format(observation)
-    return result
+        else:
+            return result
 
 
 def wikipedia(q: str) -> str:
