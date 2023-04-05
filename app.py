@@ -441,7 +441,7 @@ def cmd_ask(query: str, chat_id: str):
             text="GPT-4 not enabled in this chat",
         )
         return
-    gpt_response = chatbot.query(query)
+    gpt_response = chatbot.query(query, app.logger)
     bot.sendMessage(
         chat_id=chat_id,
         text=gpt_response,
