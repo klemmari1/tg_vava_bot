@@ -35,6 +35,7 @@ from bs4 import BeautifulSoup
 from flask import Flask, request, Response
 from sentry_sdk.integrations.flask import FlaskIntegration
 
+import chatbot
 import settings
 import tgbot
 from chats import Chat, db
@@ -104,7 +105,10 @@ def reset_conversation_history(chat_ids: list = []):
 
     for openai_chat_id in chat_ids:
         OPENAI_CONVERSATION_HISTORY[openai_chat_id] = [
-            {"role": "system", "content": "You are a helpful assistant named VavaBot. You try to keep your answers short and to the point without rambling too much"},
+            {
+                "role": "system",
+                "content": "You are a helpful assistant named VavaBot. You try to keep your answers short and to the point without rambling too much",
+            },
         ]
 
 
@@ -437,7 +441,7 @@ def cmd_ask(query: str, chat_id: str):
             text="GPT-4 not enabled in this chat",
         )
         return
-    gpt_response = request_gpt(query, chat_id)
+    gpt_response = chatbot.query(query)
     bot.sendMessage(
         chat_id=chat_id,
         text=gpt_response,

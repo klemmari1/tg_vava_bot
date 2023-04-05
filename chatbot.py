@@ -1,12 +1,15 @@
 # This code is Apache 2 licensed:
 # https://www.apache.org/licenses/LICENSE-2.0
-import openai
+import json
 import re
-import httpx
-import mwclient
+
+import openai
+import requests
+
 import settings
 
 openai.api_key = settings.OPENAI_API_KEY
+
 
 class ChatBot:
     def __init__(self, system=""):
@@ -27,6 +30,7 @@ class ChatBot:
         # {"completion_tokens": 86, "prompt_tokens": 26, "total_tokens": 112}
         # print(completion.usage)
         return completion.choices[0].message.content
+
 
 prompt = """
 You run in a loop of Thought, Action, PAUSE, Observation.
@@ -68,9 +72,10 @@ Answer: The capital of France is Paris
 """.strip()
 
 
-action_re = re.compile('^Action: (\w+): (.*)$')
+action_re = re.compile("^Action: (\w+): (.*)$")
 
-def query(question, max_turns=5):
+
+def query(question, max_turns=7) -> str:
     i = 0
     bot = ChatBot(prompt)
     next_prompt = question
@@ -78,7 +83,7 @@ def query(question, max_turns=5):
         i += 1
         result = bot(next_prompt)
         print(result)
-        actions = [action_re.match(a) for a in result.split('\n') if action_re.match(a)]
+        actions = [action_re.match(a) for a in result.split("\n") if action_re.match(a)]
         if actions:
             # There is an action to run
             action, action_input = actions[0].groups()
@@ -86,29 +91,45 @@ def query(question, max_turns=5):
                 raise Exception("Unknown action: {}: {}".format(action, action_input))
             print(" -- running {} {}".format(action, action_input))
             observation = known_actions[action](action_input)
-            print("Observation:", observation)
+            print(" -- sending observation...")
             next_prompt = "Observation: {}".format(observation)
-        else:
-            return
+    return result
 
 
 def wikipedia(q: str) -> str:
-    return httpx.get("https://en.wikipedia.org/w/api.php", params={
-        "action": "query",
-        "list": "search",
-        "srsearch": q,
-        "format": "json"
-    }).json()["query"]["search"][0]["snippet"]
+    results = wikipedia.search(q)
+    return wikipedia.summary(results[0])
 
 
 def lolwiki(q: str) -> str:
-    return ""
+    url = f"https://league-of-legends-champions.p.rapidapi.com/champions/en-us/{q}"
+
+    headers = {
+        "X-RapidAPI-Key": settings.RAPIDAPI_KEY,
+        "X-RapidAPI-Host": "league-of-legends-champions.p.rapidapi.com",
+    }
+
+    response = requests.request("GET", url, headers=headers)
+
+    assert response.status_code == 200
+
+    response_json = json.loads(response.text)
+    data_dragon_json = json.loads(response_json["champion"][0]["data_dragon_json"])
+
+    champion_summary = {
+        "lore": data_dragon_json["lore"],
+        "abilities": data_dragon_json["spells"],
+    }
+
+    return str(champion_summary)
+
 
 def calculate(q: str) -> str:
     return eval(q)
 
+
 known_actions = {
-    "wikipedia": wikipedia,
     "calculate": calculate,
+    "wikipedia": wikipedia,
     "lolwiki": lolwiki,
 }

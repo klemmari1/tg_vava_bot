@@ -30,3 +30,5 @@ SENTRY_DSN = env("SENTRY_DSN", "")
 OPENAI_API_KEY = env("OPENAI_API_KEY")
 
 OPENAI_CHAT_IDS = env.list("OPENAI_CHAT_IDS", subcast=str)
+
+RAPIDAPI_KEY = env("RAPIDAPI_KEY")
