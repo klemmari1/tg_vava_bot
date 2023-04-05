@@ -408,21 +408,6 @@ def not_found(query, chat_id):
     )
 
 
-def request_gpt(query: str, chat_id: str):
-    openai.api_key = settings.OPENAI_API_KEY
-
-    try:
-        response = openai.ChatCompletion.create(
-            model="gpt-4", messages=OPENAI_CONVERSATION_HISTORY[chat_id]
-        )
-        response_text = response["choices"][0]["message"]["content"]
-    except Exception as e:
-        app.logger.warning(f"Exception while requesting GPT: {str(e)}")
-        return "Error occurred while requesting GPT"
-
-    return response_text
-
-
 def cmd_ask(query: str, chat_id: str):
     if chat_id not in settings.OPENAI_CHAT_IDS:
         bot.sendMessage(
@@ -430,13 +415,21 @@ def cmd_ask(query: str, chat_id: str):
             text="GPT-4 not enabled in this chat",
         )
         return
-    gpt_response = chatbot.query(
-        query, OPENAI_CONVERSATION_HISTORY[chat_id], app.logger
+
+    gpt_response, total_tokens = chatbot.query(
+        query,
+        OPENAI_CONVERSATION_HISTORY[chat_id],
+        app.logger,
+        max_turns=5,
     )
+
     bot.sendMessage(
         chat_id=chat_id,
         text=gpt_response,
     )
+
+    if total_tokens >= 5000:
+        reset_conversation_history([chat_id])
 
 
 def cmd_reset(query: str, chat_id: str):

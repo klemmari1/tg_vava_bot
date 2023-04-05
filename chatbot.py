@@ -21,16 +21,16 @@ class ChatBot:
 
     def __call__(self, message):
         self.messages.append({"role": "user", "content": message})
-        result = self.execute()
+        result, total_tokens = self.execute()
         self.messages.append({"role": "assistant", "content": result})
-        return result
+        return result, total_tokens
 
     def execute(self):
         completion = openai.ChatCompletion.create(model="gpt-4", messages=self.messages)
         # Uncomment this to print out token usage each time, e.g.
         # {"completion_tokens": 86, "prompt_tokens": 26, "total_tokens": 112}
         # print(completion.usage)
-        return completion.choices[0].message.content
+        return completion.choices[0].message.content, completion.usage["total_tokens"]
 
 
 prompt = """
@@ -104,7 +104,7 @@ def query(
     next_prompt = question
     while i < max_turns:
         i += 1
-        result = bot(next_prompt)
+        result, total_tokens = bot(next_prompt)
 
         if logger:
             logger.info(result)
@@ -132,7 +132,7 @@ def query(
 
             next_prompt = "Observation: {}".format(observation)
         else:
-            return result
+            return result, total_tokens
 
 
 def wikipedia_query(q: str) -> str:
