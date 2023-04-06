@@ -42,6 +42,7 @@ Observation will be the result of running those actions.
 You must answer in the same language as the original question is presented.
 You can use the pre-trained data to answer as well if you already know the answer or if there are no results from the Actions.
 Do not tell what systems you are using to fetch the information.
+Do not outline other steps in your answer other than the answer itself.
 
 Your available actions are:
 
