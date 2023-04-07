@@ -12,6 +12,7 @@ pip-tools
 psycopg2-binary
 pyjwt
 requests
+riotwatcher
 sqlalchemy
 werkzeug
 wikipedia

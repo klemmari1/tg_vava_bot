@@ -8,6 +8,7 @@ import requests
 import wikipedia
 
 import settings
+import riot_summoner_api
 
 openai.api_key = settings.OPENAI_API_KEY
 
@@ -57,6 +58,11 @@ Returns a summary from searching Wikipedia
 lolwiki:
 e.g. lolwiki: Milio
 Search LoLWiki for information about the video game League of Legends
+
+riotapi:
+e.g. riotapi: Vava euw1
+Search Riot API for summoner match history and information on recent performance
+Takes the summoner name and region as parameters
 
 Always look things up on Wikipedia if you have the opportunity to do so.
 
@@ -117,12 +123,12 @@ def query(
             # There is an action to run
             action, action_input = actions[0].groups()
             if action not in known_actions:
-                raise Exception("Unknown action: {}: {}".format(action, action_input))
+                raise Exception(f"Unknown action: {action}: {action_input}")
 
             if logger:
-                logger.info(" -- running {} {}".format(action, action_input))
+                logger.info(f" -- running {action} {action_input}")
             else:
-                print(" -- running {} {}".format(action, action_input))
+                print(f" -- running {action} {action_input}")
 
             observation = known_actions[action](action_input)
 
@@ -152,7 +158,7 @@ def lolwiki(q: str) -> str:
         "X-RapidAPI-Host": "league-of-legends-champions.p.rapidapi.com",
     }
 
-    response = requests.request("GET", url, headers=headers)
+    response = requests.request("GET", url, headers=headers, timeout=30)
 
     assert response.status_code == 200
 
@@ -167,6 +173,13 @@ def lolwiki(q: str) -> str:
     return str(champion_summary)
 
 
+def riotapi(q: str) -> str:
+    q_split = q.split(" ")
+    summoner_name = q_split[0]
+    region = q_split[1]
+    riot_summoner_api.get_summoner_match_info(summoner_name, region)
+
+
 def calculate(q: str) -> str:
     return eval(q)
 
@@ -175,4 +188,5 @@ known_actions = {
     "calculate": calculate,
     "wikipedia": wikipedia_query,
     "lolwiki": lolwiki,
+    "riotapi": riotapi,
 }
