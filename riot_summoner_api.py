@@ -8,15 +8,13 @@ def get_summoner_match_info(summoner_name: str, region: str = "euw1") -> list:
 
     summoner_json: dict = watcher.summoner.by_name(region, summoner_name)
 
-    matches = watcher.match.matchlist_by_puuid(region, summoner_json["puuid"])
+    matches = watcher.match.matchlist_by_puuid(
+        region, summoner_json["puuid"], type="ranked"
+    )
 
     all_match_details = []
     for match in matches:
         match_detail = watcher.match.by_id(region, match)["info"]
-
-        game_mode = match_detail["gameMode"]
-        if game_mode != "CLASSIC":
-            continue
 
         game_id = match_detail["gameId"]
         game_duration = match_detail["gameDuration"]
