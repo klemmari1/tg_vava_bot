@@ -2,7 +2,7 @@ from riotwatcher import LolWatcher
 import settings
 
 
-def get_summoner_match_info(summoner_name: str, region: str = "euw1") -> str:
+def get_summoner_match_info(summoner_name: str, region: str = "euw1") -> list:
     watcher = LolWatcher(settings.RIOT_API_KEY)
 
     summoner_json: dict = watcher.summoner.by_name(region, summoner_name)
@@ -40,7 +40,7 @@ def get_summoner_match_info(summoner_name: str, region: str = "euw1") -> str:
         if len(all_match_details) >= 3:
             break
 
-    return str(all_match_details)
+    return all_match_details
 
 if __name__ == "__main__":
     get_summoner_match_info("Vava")

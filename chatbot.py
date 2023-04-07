@@ -137,7 +137,7 @@ def query(
             else:
                 print(" -- sending observation...")
 
-            next_prompt = "Observation: {}".format(observation)
+            next_prompt = f"Observation: {observation}"
         else:
             return result, total_tokens
 
@@ -177,7 +177,7 @@ def riotapi(q: str) -> str:
     q_split = q.split(" ")
     summoner_name = q_split[0]
     region = q_split[1]
-    riot_summoner_api.get_summoner_match_info(summoner_name, region)
+    return str(riot_summoner_api.get_summoner_match_info(summoner_name, region))
 
 
 def calculate(q: str) -> str:
