@@ -4,12 +4,12 @@ import json
 import re
 
 import openai
-from openai import error
 import requests
 import wikipedia
+from openai import error
 
-import settings
 import riot_summoner_api
+import settings
 
 openai.api_key = settings.OPENAI_API_KEY
 
@@ -29,7 +29,9 @@ class ChatBot:
 
     def execute(self):
         try:
-            completion = openai.ChatCompletion.create(model="gpt-4", messages=self.messages)
+            completion = openai.ChatCompletion.create(
+                model="gpt-4", messages=self.messages
+            )
         except error.RateLimitError:
             return "OpenAI Rate Limit Error", 0
         except error.InvalidRequestError:
