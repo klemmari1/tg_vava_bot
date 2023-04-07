@@ -22,9 +22,9 @@ def get_summoner_match_info(summoner_name: str, region: str = "euw1") -> list:
         game_duration = match_detail["gameDuration"]
         match_info = []
         for row in match_detail["participants"]:
+            summoner_info = {}
             game_summoner_name = row["summonerName"]
             if game_summoner_name == summoner_name:
-                summoner_info = {}
                 summoner_info["gameId"] = game_id
                 summoner_info["teamId"] = row["teamId"]
                 summoner_info["summonerName"] = game_summoner_name
@@ -63,11 +63,12 @@ def get_summoner_match_info(summoner_name: str, region: str = "euw1") -> list:
                 summoner_info["soloKills"] = row["challenges"]["soloKills"]
                 summoner_info["gameDuration"] = game_duration
 
-            match_info.append(summoner_info)
+            if summoner_info:
+                match_info.append(summoner_info)
 
         all_match_details.append(match_info)
 
-        if len(all_match_details) >= 3:
+        if len(all_match_details) >= 5:
             break
 
     return all_match_details
