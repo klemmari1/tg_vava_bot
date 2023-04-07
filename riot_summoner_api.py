@@ -30,6 +30,7 @@ def get_summoner_match_info(summoner_name: str, region: str = "euw1") -> list:
                 summoner_info["teamPosition"] = row["teamPosition"]
                 summoner_info["role"] = row["role"]
                 summoner_info["win"] = row["win"]
+                summoner_info["teamEarlySurrendered"] = row["teamEarlySurrendered"]
                 summoner_info["kills"] = row["kills"]
                 summoner_info["deaths"] = row["deaths"]
                 summoner_info["assists"] = row["assists"]
@@ -38,6 +39,7 @@ def get_summoner_match_info(summoner_name: str, region: str = "euw1") -> list:
                 ]
                 summoner_info["turretTakedowns"] = row["turretTakedowns"]
                 summoner_info["damageDealtToTurrets"] = row["damageDealtToTurrets"]
+                summoner_info["damageDealtToObjectives"] = row["damageDealtToObjectives"]
                 summoner_info["goldEarned"] = row["goldEarned"]
                 summoner_info["champLevel"] = row["champLevel"]
                 summoner_info["totalMinionsKilled"] = row["totalMinionsKilled"]
@@ -46,11 +48,8 @@ def get_summoner_match_info(summoner_name: str, region: str = "euw1") -> list:
                 summoner_info["wardsKilled"] = row["wardsKilled"]
                 summoner_info["wardsPlaced"] = row["wardsPlaced"]
                 summoner_info["timePlayed"] = row["timePlayed"]
-                summoner_info["doubleKills"] = row["doubleKills"]
-                summoner_info["tripleKills"] = row["tripleKills"]
-                summoner_info["quadraKills"] = row["quadraKills"]
-                summoner_info["pentaKills"] = row["pentaKills"]
-                summoner_info["killingSprees"] = row["killingSprees"]
+                summoner_info["largestMultiKill"] = row["largestMultiKill"]
+                summoner_info["largestKillingSpree"] = row["largestKillingSpree"]
                 summoner_info["dragonTakedowns"] = row["challenges"]["dragonTakedowns"]
                 summoner_info["teamBaronKills"] = row["challenges"]["teamBaronKills"]
                 summoner_info["teamElderDragonKills"] = row["challenges"][
@@ -62,12 +61,6 @@ def get_summoner_match_info(summoner_name: str, region: str = "euw1") -> list:
                 summoner_info["soloKills"] = row["challenges"]["soloKills"]
                 summoner_info["epicMonsterSteals"] = row["challenges"][
                     "epicMonsterSteals"
-                ]
-                summoner_info["alliedJungleMonsterKills"] = row["challenges"][
-                    "alliedJungleMonsterKills"
-                ]
-                summoner_info["enemyJungleMonsterKills"] = row["challenges"][
-                    "enemyJungleMonsterKills"
                 ]
                 summoner_info["gameDuration"] = game_duration
 
