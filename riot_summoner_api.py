@@ -61,6 +61,15 @@ def get_summoner_match_info(summoner_name: str, region: str = "euw1") -> list:
                     "teamRiftHeraldKills"
                 ]
                 summoner_info["soloKills"] = row["challenges"]["soloKills"]
+                summoner_info["epicMonsterSteals"] = row["challenges"][
+                    "epicMonsterSteals"
+                ]
+                summoner_info["alliedJungleMonsterKills"] = row["challenges"][
+                    "alliedJungleMonsterKills"
+                ]
+                summoner_info["enemyJungleMonsterKills"] = row["challenges"][
+                    "enemyJungleMonsterKills"
+                ]
                 summoner_info["gameDuration"] = game_duration
 
             if summoner_info:
