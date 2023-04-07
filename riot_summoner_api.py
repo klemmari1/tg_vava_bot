@@ -75,5 +75,5 @@ def get_summoner_match_info(summoner_name: str, region: str = "euw1") -> list:
 
 
 if __name__ == "__main__":
-    all_match_details = get_summoner_match_info("Vava")
-    print(all_match_details)
+    details = get_summoner_match_info("Vava")
+    print(details)
