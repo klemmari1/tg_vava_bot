@@ -18,6 +18,7 @@ def get_summoner_match_info(summoner_name: str, region: str = "euw1") -> list:
             continue
 
         game_id = match_detail["gameId"]
+        game_duration = match_detail["gameDuration"]
         match_info = []
         for row in match_detail['participants']:
             summoner_info = {}
@@ -29,10 +30,20 @@ def get_summoner_match_info(summoner_name: str, region: str = "euw1") -> list:
             summoner_info['kills'] = row['kills']
             summoner_info['deaths'] = row['deaths']
             summoner_info['assists'] = row['assists']
-            summoner_info['totalDamageDealt'] = row['totalDamageDealt']
+            summoner_info['totalDamageDealtToChampions'] = row['totalDamageDealtToChampions']
+            summoner_info['turretTakedowns'] = row['turretTakedowns']
+            summoner_info['damageDealtToTurrets'] = row['damageDealtToTurrets']
             summoner_info['goldEarned'] = row['goldEarned']
             summoner_info['champLevel'] = row['champLevel']
             summoner_info['totalMinionsKilled'] = row['totalMinionsKilled']
+            summoner_info['totalHealsOnTeammates'] = row['totalHealsOnTeammates']
+            summoner_info['totalHeal'] = row['totalHeal']
+            summoner_info['wardsKilled'] = row['wardsKilled']
+            summoner_info['wardsPlaced'] = row['wardsPlaced']
+            summoner_info['timePlayed'] = row['timePlayed']
+            summoner_info['lane'] = row['lane']
+            summoner_info['gameDuration'] = game_duration
+
             match_info.append(summoner_info)
 
         all_match_details.append(match_info)
@@ -43,4 +54,5 @@ def get_summoner_match_info(summoner_name: str, region: str = "euw1") -> list:
     return all_match_details
 
 if __name__ == "__main__":
-    get_summoner_match_info("Vava")
+    all_match_details = get_summoner_match_info("Vava")
+    print(all_match_details)
