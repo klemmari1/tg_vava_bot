@@ -31,9 +31,9 @@ class ChatBot:
         try:
             completion = openai.ChatCompletion.create(model="gpt-4", messages=self.messages)
         except error.RateLimitError:
-            return "OpenAI Rate Limit Error"
+            return "OpenAI Rate Limit Error", 0
         except error.InvalidRequestError:
-            return "Token limit reached"
+            return "Token limit reached", 0
         # Uncomment this to print out token usage each time, e.g.
         # {"completion_tokens": 86, "prompt_tokens": 26, "total_tokens": 112}
         # print(completion.usage)

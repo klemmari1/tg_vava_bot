@@ -428,7 +428,7 @@ def cmd_ask(query: str, chat_id: str):
         text=gpt_response,
     )
 
-    if total_tokens >= 5000:
+    if total_tokens >= 5000 or gpt_response == "Token limit reached":
         reset_conversation_history([chat_id])
 
 
