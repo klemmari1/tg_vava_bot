@@ -26,7 +26,9 @@ def get_summoner_match_info(summoner_name: str, region: str = "euw1") -> list:
                 summoner_info["gameId"] = game_id
                 summoner_info["teamId"] = row["teamId"]
                 summoner_info["summonerName"] = game_summoner_name
-                summoner_info["champion"] = row["championName"]
+                summoner_info["championName"] = row["championName"]
+                summoner_info["teamPosition"] = row["teamPosition"]
+                summoner_info["role"] = row["role"]
                 summoner_info["win"] = row["win"]
                 summoner_info["kills"] = row["kills"]
                 summoner_info["deaths"] = row["deaths"]
@@ -44,7 +46,6 @@ def get_summoner_match_info(summoner_name: str, region: str = "euw1") -> list:
                 summoner_info["wardsKilled"] = row["wardsKilled"]
                 summoner_info["wardsPlaced"] = row["wardsPlaced"]
                 summoner_info["timePlayed"] = row["timePlayed"]
-                summoner_info["lane"] = row["lane"]
                 summoner_info["doubleKills"] = row["doubleKills"]
                 summoner_info["tripleKills"] = row["tripleKills"]
                 summoner_info["quadraKills"] = row["quadraKills"]
@@ -82,5 +83,5 @@ def get_summoner_match_info(summoner_name: str, region: str = "euw1") -> list:
 
 
 if __name__ == "__main__":
-    details = get_summoner_match_info("Vava")
+    details = get_summoner_match_info("Thebausffs")
     print(details)
