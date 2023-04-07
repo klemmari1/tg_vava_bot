@@ -417,7 +417,7 @@ def cmd_ask(query: str, chat_id: str):
         )
         return
 
-    gpt_response, total_tokens = chatbot.query(
+    gpt_response = chatbot.query(
         query,
         OPENAI_CONVERSATION_HISTORY[chat_id],
         app.logger,
@@ -429,7 +429,7 @@ def cmd_ask(query: str, chat_id: str):
         text=gpt_response,
     )
 
-    if total_tokens >= 7000 or gpt_response == "Token limit reached":
+    if gpt_response == "Token limit reached":
         reset_conversation_history([chat_id])
 
 

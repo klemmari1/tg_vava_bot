@@ -2,6 +2,7 @@
 # https://www.apache.org/licenses/LICENSE-2.0
 import json
 import re
+import traceback
 
 import openai
 import requests
@@ -23,9 +24,9 @@ class ChatBot:
 
     def __call__(self, message):
         self.messages.append({"role": "user", "content": message})
-        result, total_tokens = self.execute()
+        result = self.execute()
         self.messages.append({"role": "assistant", "content": result})
-        return result, total_tokens
+        return result
 
     def execute(self):
         try:
@@ -33,13 +34,15 @@ class ChatBot:
                 model="gpt-4", messages=self.messages
             )
         except error.RateLimitError:
+            traceback.print_exc()
             return "OpenAI Rate Limit Error", 0
         except error.InvalidRequestError:
+            traceback.print_exc()
             return "Token limit reached", 0
         # Uncomment this to print out token usage each time, e.g.
         # {"completion_tokens": 86, "prompt_tokens": 26, "total_tokens": 112}
         # print(completion.usage)
-        return completion.choices[0].message.content, completion.usage["total_tokens"]
+        return completion.choices[0].message.content
 
 
 prompt = """
@@ -119,7 +122,7 @@ def query(
     next_prompt = question
     while i < max_turns:
         i += 1
-        result, total_tokens = bot(next_prompt)
+        result = bot(next_prompt)
 
         if logger:
             logger.info(result)
@@ -147,7 +150,7 @@ def query(
 
             next_prompt = f"Observation: {observation}"
         else:
-            return result, total_tokens
+            return result
 
 
 def wikipedia_query(q: str) -> str:
