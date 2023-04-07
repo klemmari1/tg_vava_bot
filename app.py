@@ -100,6 +100,7 @@ OPENAI_CONVERSATION_HISTORY = {}
 
 
 def reset_conversation_history(chat_ids: list = []):
+    app.logger.info(f"Resetting conversation history of chat IDs: {chat_ids}")
     if chat_ids == []:
         chat_ids = settings.OPENAI_CHAT_IDS
 
@@ -428,7 +429,7 @@ def cmd_ask(query: str, chat_id: str):
         text=gpt_response,
     )
 
-    if total_tokens >= 5000 or gpt_response == "Token limit reached":
+    if total_tokens >= 7000 or gpt_response == "Token limit reached":
         reset_conversation_history([chat_id])
 
 
