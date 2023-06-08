@@ -13,7 +13,8 @@ def get_summoner_match_info(summoner_name: str, region: str = "euw1") -> list:
         matches = watcher.match.matchlist_by_puuid(
             region, summoner_json["puuid"], type="ranked"
         )
-    except riotwatcher.ApiError:
+    except riotwatcher.ApiError as e:
+        print(str(e))
         return "APIError when querying Riot API"
 
     all_match_details = []
