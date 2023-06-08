@@ -7,9 +7,9 @@ import settings
 def get_summoner_match_info(summoner_name: str, region: str = "euw1") -> list:
     watcher = LolWatcher(settings.RIOT_API_KEY)
 
-    summoner_json: dict = watcher.summoner.by_name(region, summoner_name)
-
     try:
+        summoner_json: dict = watcher.summoner.by_name(region, summoner_name)
+
         matches = watcher.match.matchlist_by_puuid(
             region, summoner_json["puuid"], type="ranked"
         )
