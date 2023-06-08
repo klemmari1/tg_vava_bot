@@ -39,6 +39,9 @@ class ChatBot:
         except error.InvalidRequestError:
             traceback.print_exc()
             return "Token limit reached", 0
+        except error.APIError as e:
+            print(str(e))
+            return "OpenAI returned APIError"
         # Uncomment this to print out token usage each time, e.g.
         # {"completion_tokens": 86, "prompt_tokens": 26, "total_tokens": 112}
         # print(completion.usage)
