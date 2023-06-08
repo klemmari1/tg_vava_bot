@@ -1,3 +1,4 @@
+import riotwatcher
 from riotwatcher import LolWatcher
 
 import settings
@@ -8,9 +9,12 @@ def get_summoner_match_info(summoner_name: str, region: str = "euw1") -> list:
 
     summoner_json: dict = watcher.summoner.by_name(region, summoner_name)
 
-    matches = watcher.match.matchlist_by_puuid(
-        region, summoner_json["puuid"], type="ranked"
-    )
+    try:
+        matches = watcher.match.matchlist_by_puuid(
+            region, summoner_json["puuid"], type="ranked"
+        )
+    except riotwatcher.ApiError:
+        return "APIError when querying Riot API"
 
     all_match_details = []
     for match in matches:
