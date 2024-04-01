@@ -15,6 +15,8 @@ PORT = env("PORT", 5002)
 
 DATABASE_URL = env("DATABASE_URL", "sqlite:///app.db")
 
+TARJOUSHAUKKA_URL = env("TARJOUSHAUKKA_URL", "http://192.168.1.16:5000")
+
 TELEGRAM_TOKEN = env("TOKEN", "test")
 
 TELEGRAM_HOOK = env("HOOK", "test")
