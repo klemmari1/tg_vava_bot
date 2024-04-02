@@ -22,6 +22,7 @@
 
 import json
 import random
+import threading
 import urllib
 from logging.config import dictConfig
 
@@ -141,37 +142,37 @@ reset_conversation_history()
 #                 time.sleep(5)
 #
 
-@app.route("/" + settings.TELEGRAM_HOOK, methods=["POST"])
-def webhook_handler():
-    if request.method == "POST":
-        message = request.get_json(force=True)
-        app.logger.info("Incoming request:" + str(message))
-        if "inline_query" in message:
-            inline_query = message["inline_query"]
-            handle_inline_query(inline_query)
-        else:
-            msg = message.get("message", message.get("edited_message", None))
-            handle_message(msg)
-    return "ok"
+# @app.route("/" + settings.TELEGRAM_HOOK, methods=["POST"])
+# def webhook_handler():
+#     if request.method == "POST":
+#         message = request.get_json(force=True)
+#         app.logger.info("Incoming request:" + str(message))
+#         if "inline_query" in message:
+#             inline_query = message["inline_query"]
+#             handle_inline_query(inline_query)
+#         else:
+#             msg = message.get("message", message.get("edited_message", None))
+#             handle_message(msg)
+#     return "ok"
 
 
-@app.route("/set_webhook", methods=["GET"])
-def set_webhook():
-    app.logger.info("Host URL: " + request.host_url)
-    s = bot.setWebhook(request.host_url + settings.TELEGRAM_HOOK)
-    if s:
-        return "webhook setup ok"
-    else:
-        return "webhook setup failed"
+# @app.route("/set_webhook", methods=["GET"])
+# def set_webhook():
+#     app.logger.info("Host URL: " + request.host_url)
+#     s = bot.setWebhook(request.host_url + settings.TELEGRAM_HOOK)
+#     if s:
+#         return "webhook setup ok"
+#     else:
+#         return "webhook setup failed"
 
 
-@app.route("/delete_webhook", methods=["GET"])
-def delete_webhook():
-    response = bot.makeRequest("deleteWebhook")
-    if response:
-        return "webhook delete ok"
-    else:
-        return "webhook delete failed"
+# @app.route("/delete_webhook", methods=["GET"])
+# def delete_webhook():
+#     response = bot.makeRequest("deleteWebhook")
+#     if response:
+#         return "webhook delete ok"
+#     else:
+#         return "webhook delete failed"
 
 
 def decode_auth_token(auth_token):
@@ -583,8 +584,7 @@ if __name__ == '__main__':
     application.add_handler(InlineQueryHandler(handle_inline_query))
 
     application.add_handler(CallbackQueryHandler(button_callback))
-
+    
+    threading.Thread(target=lambda: app.run(port=settings.PORT, debug=True, use_reloader=False)).start()
+    
     application.run_polling()
-    application.idle()
-
-    app.run(debug=True, port=settings.PORT)
