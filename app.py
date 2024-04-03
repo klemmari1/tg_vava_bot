@@ -429,7 +429,8 @@ async def button_callback(update: Update, context: CallbackContext) -> None:
         }
         requests.post(
             f"{settings.TARJOUSHAUKKA_URL}/chat",
-            data=data,
+            data=data.encode('utf-8'),
+            headers={'Content-type': 'application/x-www-form-urlencoded; charset=utf-8'}
         )
         # chat = chats.Chat(
         #     str(chat_id),
