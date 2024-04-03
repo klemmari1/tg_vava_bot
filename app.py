@@ -21,6 +21,7 @@
 """  # noqa
 
 import json
+import logging
 import random
 import threading
 import urllib
@@ -40,6 +41,13 @@ import chatbot
 import settings
 from chats import Chat, db
 
+
+# Enable logging
+logging.basicConfig(
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
+)
+
+logger = logging.getLogger(__name__)
 
 @dataclass
 class WebhookUpdate:
