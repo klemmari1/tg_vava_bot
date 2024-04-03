@@ -115,6 +115,20 @@ not_found_captions = [
 ]
 
 
+CATEGORIES = [
+    "Tekniikka ja elektroniikka",
+    "Työkalut ja rakennustarvikkeet",
+    "Koti ja sisustus",
+    "Vaatetus",
+    "Harrastusvälineet ja -tarvikkeet",
+    "Autot ja ajoneuvot",
+    "Ruoka ja juomat",
+    "Kirjat ja lehdet",
+    "Peliaiheiset tuotteet",
+    "Tietokoneen komponentit",
+    "Muut",
+]
+
 OPENAI_CONVERSATION_HISTORY = {}
 
 SELECTED_CATEGORIES = {}
@@ -369,20 +383,10 @@ async def cmd_help(update: Update, context: CallbackContext):
 
 
 def get_category_keyboard():
-    keyboard = [
-        [InlineKeyboardButton("Tekniikka ja elektroniikka", callback_data='1')],
-        [InlineKeyboardButton("Työkalut ja rakennustarvikkeet", callback_data='2')],
-        [InlineKeyboardButton("Koti ja sisustus", callback_data='3')],
-        [InlineKeyboardButton("Vaatetus", callback_data='4')],
-        [InlineKeyboardButton("Harrastusvälineet ja -tarvikkeet", callback_data='5')],
-        [InlineKeyboardButton("Autot ja ajoneuvot", callback_data='6')],
-        [InlineKeyboardButton("Ruoka ja juomat", callback_data='7')],
-        [InlineKeyboardButton("Kirjat ja lehdet", callback_data='8')],
-        [InlineKeyboardButton("Peliaiheiset tuotteet", callback_data='9')],
-        [InlineKeyboardButton("Tietokoneen komponentit", callback_data='10')],
-        [InlineKeyboardButton("Muut", callback_data='11')],
-        [InlineKeyboardButton("Submit", callback_data='submit')]
-    ]
+    keyboard = []
+    for idx, category in enumerate(CATEGORIES):
+        keyboard.append([InlineKeyboardButton(category, callback_data=str(idx))])
+    keyboard.append([InlineKeyboardButton("Submit", callback_data='submit')])
     return InlineKeyboardMarkup(keyboard)
 
 
@@ -441,9 +445,9 @@ async def button_callback(update: Update, context: CallbackContext) -> None:
 async def get_updated_keyboard(selected):
     """Updates the keyboard based on the selected categories."""
     keyboard = []
-    for i in range(1, 4):
-        text = f"{i}" + (" ✔" if str(i) in selected else "")
-        keyboard.append([InlineKeyboardButton(text, callback_data=str(i))])
+    for idx, category in enumerate(CATEGORIES):
+        text = f"{category}" + (" ✔" if str(idx) in selected else "")
+        keyboard.append([InlineKeyboardButton(text, callback_data=str(idx))])
     keyboard.append([InlineKeyboardButton("Submit", callback_data='submit')])
     return InlineKeyboardMarkup(keyboard)
 
