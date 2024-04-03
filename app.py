@@ -350,6 +350,7 @@ async def cmd_help(update: Update, context: CallbackContext):
     app.logger.info("Sending help text")
     await update.message.reply_text(
         help_text,
+        parse_mode='MarkdownV2'
     )
     # bot.sendMessage(
     #     chat_id=chat_id,
