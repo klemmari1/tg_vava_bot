@@ -353,7 +353,6 @@ async def cmd_inspis(update: Update, context: CallbackContext):
 
 
 async def cmd_help(update: Update, context: CallbackContext):
-    print(update.message.chat_id)
     help_text = __doc__
     app.logger.info("Sending help text")
     await update.message.reply_text(
