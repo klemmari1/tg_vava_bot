@@ -596,33 +596,20 @@ async def cmd_reset(update: Update, context: CallbackContext):
 # thread = threading.Thread(target=poll_for_updates)
 # thread.start()
 
+bot.add_handler(CommandHandler('subscribe', cmd_subscribe))
+bot.add_handler(CommandHandler('unsubscribe', cmd_unsubscribe))
+bot.add_handler(CommandHandler('img', cmd_img))
+bot.add_handler(CommandHandler('puppu', cmd_puppu))
+bot.add_handler(CommandHandler('inspis', cmd_inspis))
+bot.add_handler(CommandHandler('ask', cmd_ask))
+bot.add_handler(CommandHandler('reset', cmd_reset))
+bot.add_handler(CommandHandler('help', cmd_help))
+bot.add_handler(CommandHandler('vtest', test_img))
 
-if __name__ == '__main__':
+bot.add_handler(InlineQueryHandler(handle_inline_query))
 
-    # "/img": cmd_img,
-    # "/puppu": cmd_puppu,
-    # "/inspis": cmd_inspis,
-    # "/ask": cmd_ask,
-    # "/reset": cmd_reset,
-    # "/subscribe": cmd_subscribe,
-    # "/unsubscribe": cmd_unsubscribe,
-    # "/help": cmd_help,
-    # "/vtest": test_img,
+bot.add_handler(CallbackQueryHandler(button_callback))
 
-    bot.add_handler(CommandHandler('subscribe', cmd_subscribe))
-    bot.add_handler(CommandHandler('unsubscribe', cmd_unsubscribe))
-    bot.add_handler(CommandHandler('img', cmd_img))
-    bot.add_handler(CommandHandler('puppu', cmd_puppu))
-    bot.add_handler(CommandHandler('inspis', cmd_inspis))
-    bot.add_handler(CommandHandler('ask', cmd_ask))
-    bot.add_handler(CommandHandler('reset', cmd_reset))
-    bot.add_handler(CommandHandler('help', cmd_help))
-    bot.add_handler(CommandHandler('vtest', test_img))
+threading.Thread(target=lambda: app.run(port=settings.PORT, debug=True, use_reloader=False)).start()
 
-    bot.add_handler(InlineQueryHandler(handle_inline_query))
-
-    bot.add_handler(CallbackQueryHandler(button_callback))
-
-    threading.Thread(target=lambda: app.run(port=settings.PORT, debug=True, use_reloader=False)).start()
-
-    bot.run_polling()
+bot.run_polling()
