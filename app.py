@@ -439,7 +439,7 @@ async def button_callback(update: Update, context: CallbackContext) -> None:
             )
         else:
             await query.edit_message_text(
-                f"*Tilasit kategoriat:*\n{selected_categories_text}",
+                f"Tilasit kategoriat:\n{selected_categories_text}",
                 parse_mode="MarkdownV2",
             )
         return
@@ -462,9 +462,9 @@ async def get_updated_keyboard(selected):
     """Updates the keyboard based on the selected categories."""
     keyboard = []
     for idx, category in CATEGORIES.items():
-        text = f"{category}" + (" ✅" if str(idx) in selected else "")
+        text = f"*{category}*" + (" ✅" if str(idx) in selected else "")
         keyboard.append([InlineKeyboardButton(text, callback_data=str(idx))])
-    keyboard.append([InlineKeyboardButton("Tilaa", callback_data="tilaa")])
+    keyboard.append([InlineKeyboardButton("*_Tilaa_*", callback_data="tilaa")])
     return InlineKeyboardMarkup(keyboard)
 
 
@@ -485,8 +485,9 @@ async def cmd_subscribe(update: Update, context: CallbackContext):
     # )
     """Sends a message with the category selection attached."""
     await update.message.reply_text(
-        "*Valitse kategoriat joihin liittyen haluat tarjousviestejä* \n\n"
-        "*Paina 'Tilaa' jos haluat tilata kaikki kategoriat* \n",
+        "Valitse kategoriat joihin liittyen haluat tarjousviestejä\n"
+        "Paina lopuksi *_Tilaa_*\n\n"
+        "*Paina vain *_Tilaa_* jos haluat tilata kaikki kategoriat\n",
         parse_mode="MarkdownV2",
         reply_markup=get_category_keyboard(),
     )
