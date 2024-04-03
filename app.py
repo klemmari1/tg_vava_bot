@@ -396,7 +396,7 @@ async def cmd_help(update: Update, context: CallbackContext):
 
 def get_category_keyboard():
     keyboard = []
-    for idx, category in enumerate(CATEGORIES):
+    for idx, category in CATEGORIES.items():
         keyboard.append([InlineKeyboardButton(category, callback_data=str(idx))])
     keyboard.append([InlineKeyboardButton("Tilaa", callback_data="tilaa")])
     return InlineKeyboardMarkup(keyboard)
@@ -464,7 +464,7 @@ async def button_callback(update: Update, context: CallbackContext) -> None:
 async def get_updated_keyboard(selected):
     """Updates the keyboard based on the selected categories."""
     keyboard = []
-    for idx, category in enumerate(CATEGORIES):
+    for idx, category in CATEGORIES.items():
         text = f"{category}" + (" ✔" if str(idx) in selected else "")
         keyboard.append([InlineKeyboardButton(text, callback_data=str(idx))])
     keyboard.append([InlineKeyboardButton("Tilaa", callback_data="tilaa")])
