@@ -395,8 +395,8 @@ async def cmd_help(update: Update, context: CallbackContext):
 def get_category_keyboard():
     keyboard = []
     for idx, category in CATEGORIES.items():
-        keyboard.append([InlineKeyboardButton(category, callback_data=str(idx))])
-    keyboard.append([InlineKeyboardButton("Tilaa", callback_data="tilaa")])
+        keyboard.append([InlineKeyboardButton(f"*{category}*", callback_data=str(idx))])
+    keyboard.append([InlineKeyboardButton("*_Tilaa_*", callback_data="tilaa")])
     return InlineKeyboardMarkup(keyboard)
 
 
@@ -455,7 +455,9 @@ async def button_callback(update: Update, context: CallbackContext) -> None:
 
     # Update the keyboard to reflect current selections
     markup = await get_updated_keyboard(SELECTED_CATEGORIES[user_id])
-    await query.edit_message_reply_markup(reply_markup=markup)
+    await query.edit_message_reply_markup(
+        reply_markup=markup,
+    )
 
 
 async def get_updated_keyboard(selected):
