@@ -44,7 +44,9 @@ def get_summoner_match_info(summoner_name: str, region: str = "euw1") -> list:
                 ]
                 summoner_info["turretTakedowns"] = row["turretTakedowns"]
                 summoner_info["damageDealtToTurrets"] = row["damageDealtToTurrets"]
-                summoner_info["damageDealtToObjectives"] = row["damageDealtToObjectives"]
+                summoner_info["damageDealtToObjectives"] = row[
+                    "damageDealtToObjectives"
+                ]
                 summoner_info["goldEarned"] = row["goldEarned"]
                 summoner_info["champLevel"] = row["champLevel"]
                 summoner_info["totalMinionsKilled"] = row["totalMinionsKilled"]

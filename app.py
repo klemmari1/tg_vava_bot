@@ -22,7 +22,6 @@
 
 import asyncio
 import json
-import logging
 import random
 import threading
 import urllib
@@ -36,20 +35,25 @@ import telegram
 from bs4 import BeautifulSoup
 from flask import Flask, request, Response
 from sentry_sdk.integrations.flask import FlaskIntegration
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, InlineQueryResultPhoto
-from telegram.ext import CommandHandler, CallbackQueryHandler, CallbackContext, Application, InlineQueryHandler
+from telegram import (
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    InlineQueryResultPhoto,
+    Update,
+)
+from telegram.ext import (
+    Application,
+    CallbackContext,
+    CallbackQueryHandler,
+    CommandHandler,
+    ContextTypes,
+    InlineQueryHandler,
+    TypeHandler,
+)
 
 import chatbot
 import settings
 from chats import Chat, db
-
-
-# Enable logging
-logging.basicConfig(
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
-)
-
-logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -144,6 +148,10 @@ def reset_conversation_history(chat_ids: list = []):
 
 
 reset_conversation_history()
+
+
+async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE) -> None:
+    app.logger.error("Exception while handling an update:", exc_info=context.error)
 
 
 # def poll_for_updates():
@@ -241,7 +249,9 @@ def send_alert():
         #     app.logger.info("SEND ALERT:")
         #     app.logger.info(response.status_code)
         #     app.logger.info(response.content)
-        asyncio.new_event_loop().run_until_complete(send_message_to_chat(int(chat_id), message))
+        asyncio.new_event_loop().run_until_complete(
+            send_message_to_chat(int(chat_id), message)
+        )
 
     return "OK"
 
@@ -371,7 +381,7 @@ async def cmd_help(update: Update, context: CallbackContext):
     app.logger.info("Sending help text")
     await update.message.reply_text(
         help_text,
-        parse_mode='MarkdownV2',
+        parse_mode="MarkdownV2",
         disable_notification=True,
     )
     # bot.sendMessage(
@@ -386,7 +396,7 @@ def get_category_keyboard():
     keyboard = []
     for idx, category in enumerate(CATEGORIES):
         keyboard.append([InlineKeyboardButton(category, callback_data=str(idx))])
-    keyboard.append([InlineKeyboardButton("Submit", callback_data='submit')])
+    keyboard.append([InlineKeyboardButton("Tilaa", callback_data="tilaa")])
     return InlineKeyboardMarkup(keyboard)
 
 
@@ -399,18 +409,17 @@ async def button_callback(update: Update, context: CallbackContext) -> None:
     chat_id = update.message.chat_id
 
     # Handle submission
-    if query.data == "submit":
+    if query.data == "tilaa":
         selected_text = ""
         selected_categories = []
         if user_id in SELECTED_CATEGORIES and SELECTED_CATEGORIES[user_id]:
-            selected_text = ', '.join(opt for opt in SELECTED_CATEGORIES[user_id])
+            selected_text = ", ".join(opt for opt in SELECTED_CATEGORIES[user_id])
             selected_categories = SELECTED_CATEGORIES[user_id]
 
         data = {
             "chat-id": chat_id,
             "selected-categories": selected_categories,
             "sub-type": "subscribe",
-
         }
         requests.post(
             f"{settings.TARJOUSHAUKKA_URL}/chat",
@@ -425,7 +434,9 @@ async def button_callback(update: Update, context: CallbackContext) -> None:
         if not selected_text:
             await query.edit_message_text(f"You subscribed to all categories.")
         else:
-            await query.edit_message_text(f"You subscribed to categories: {selected_text}")
+            await query.edit_message_text(
+                f"You subscribed to categories: {selected_text}"
+            )
         return
 
     # Track user selections
@@ -448,7 +459,7 @@ async def get_updated_keyboard(selected):
     for idx, category in enumerate(CATEGORIES):
         text = f"{category}" + (" ✔" if str(idx) in selected else "")
         keyboard.append([InlineKeyboardButton(text, callback_data=str(idx))])
-    keyboard.append([InlineKeyboardButton("Submit", callback_data='submit')])
+    keyboard.append([InlineKeyboardButton("Tilaa", callback_data="tilaa")])
     return InlineKeyboardMarkup(keyboard)
 
 
@@ -467,10 +478,12 @@ async def cmd_subscribe(update: Update, context: CallbackContext):
     #     chat_id=chat_id,
     #     text=text,
     # )
-    """Sends a message with ten inline buttons attached."""
+    """Sends a message with the category selection attached."""
     await update.message.reply_text(
-        "Please choose which categories to subscribe to. Just click submit for all categories:",
-        reply_markup=get_category_keyboard()
+        "*Valitse kategoriat joihin liittyen haluat tarjousviestejä.* \n\n"
+        "*Paina 'Tilaa' jos haluat tilata kaikki kategoriat.* \n",
+        parse_mode="MarkdownV2",
+        reply_markup=get_category_keyboard(),
     )
 
 
@@ -535,13 +548,15 @@ async def test_img(update: Update, context: CallbackContext):
 async def daily_limit(update: Update, context: CallbackContext):
     await update.message.reply_photo(
         random.choice(error_images),
-        "You've reached the daily search limit of Google API :("
+        "You've reached the daily search limit of Google API :(",
     )
+
+
 # return bot.sendPhoto(
-    #     chat_id=chat_id,
-    #     photo=random.choice(error_images),
-    #     caption="You've reached the daily search limit of Google API :(",
-    # )
+#     chat_id=chat_id,
+#     photo=random.choice(error_images),
+#     caption="You've reached the daily search limit of Google API :(",
+# )
 
 
 async def not_found(update: Update, context: CallbackContext):
@@ -597,33 +612,41 @@ async def cmd_reset(update: Update, context: CallbackContext):
         #     chat_id=chat_id,
         #     text="GPT-4 not enabled in this chat",
         # )
-        await update.message.reply_text(
-            "GPT-4 not enabled in this chat"
-        )
+        await update.message.reply_text("GPT-4 not enabled in this chat")
         return
 
     reset_conversation_history([chat_id])
     await update.message.reply_text("GPT-4 chat history reset")
 
 
+async def logging_handler(update: Update, context: CallbackContext):
+    app.logger.info(f"Received message: {update.message.text}")
+
+
 # thread = threading.Thread(target=poll_for_updates)
 # thread.start()
 
-bot.add_handler(CommandHandler('subscribe', cmd_subscribe))
-bot.add_handler(CommandHandler('unsubscribe', cmd_unsubscribe))
-bot.add_handler(CommandHandler('img', cmd_img))
-bot.add_handler(CommandHandler('puppu', cmd_puppu))
-bot.add_handler(CommandHandler('inspis', cmd_inspis))
-bot.add_handler(CommandHandler('ask', cmd_ask))
-bot.add_handler(CommandHandler('reset', cmd_reset))
-bot.add_handler(CommandHandler('help', cmd_help))
-bot.add_handler(CommandHandler('vtest', test_img))
+bot.add_handler(CommandHandler("subscribe", cmd_subscribe))
+bot.add_handler(CommandHandler("unsubscribe", cmd_unsubscribe))
+bot.add_handler(CommandHandler("img", cmd_img))
+bot.add_handler(CommandHandler("puppu", cmd_puppu))
+bot.add_handler(CommandHandler("inspis", cmd_inspis))
+bot.add_handler(CommandHandler("ask", cmd_ask))
+bot.add_handler(CommandHandler("reset", cmd_reset))
+bot.add_handler(CommandHandler("help", cmd_help))
+bot.add_handler(CommandHandler("vtest", test_img))
 
 bot.add_handler(InlineQueryHandler(handle_inline_query))
 
 bot.add_handler(CallbackQueryHandler(button_callback))
 
+bot.add_handler(TypeHandler(Update, logging_handler))
+
+bot.add_error_handler(error_handler)
+
 if __name__ == "__main__":
-    threading.Thread(target=lambda: app.run(port=settings.PORT, debug=True, use_reloader=False)).start()
+    threading.Thread(
+        target=lambda: app.run(port=settings.PORT, debug=True, use_reloader=False)
+    ).start()
 
 bot.run_polling()
