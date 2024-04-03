@@ -1,23 +1,23 @@
 # -*- encoding: utf8 -*-
 
 """
-@klemmari\_bot _query_ \- Select and send an image from Google image search results with the given query
+@klemmari\_bot _query_ — Select and send an image from Google image search results with the given query
 
-/img _query_ \- Post the first image from Google image search with the given query \("I'm Feeling Lucky"\)
+/img _query_ — Post the first image from Google image search with the given query \("I'm Feeling Lucky"\)
 
-/puppu _input_ \- Generate a "puppulause" from the given input
+/puppu _input_ — Generate a "puppulause" from the given input
 
-/inspis \- Generate a random inspirational image
+/inspis — Generate a random inspirational image
 
-/ask \- Ask questions or talk to VavaBot
+/ask — Ask questions or talk to VavaBot
 
-/reset \- Reset VavaBot conversation history
+/reset — Reset VavaBot conversation history
 
-/subscribe \- Subscribe chat to bargain alerts
+/subscribe — Subscribe chat to bargain alerts
 
-/unsubscribe \- Unsubscribe chat from bargain alerts
+/unsubscribe — Unsubscribe chat from bargain alerts
 
-/help \- Show this help message
+/help — Show this help message
 """  # noqa
 
 import asyncio
@@ -462,7 +462,7 @@ async def get_updated_keyboard(selected):
     """Updates the keyboard based on the selected categories."""
     keyboard = []
     for idx, category in CATEGORIES.items():
-        text = f"{category}" + (" ✔" if str(idx) in selected else "")
+        text = f"{category}" + (" ✅" if str(idx) in selected else "")
         keyboard.append([InlineKeyboardButton(text, callback_data=str(idx))])
     keyboard.append([InlineKeyboardButton("Tilaa", callback_data="tilaa")])
     return InlineKeyboardMarkup(keyboard)
