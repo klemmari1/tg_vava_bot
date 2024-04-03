@@ -152,6 +152,7 @@ reset_conversation_history()
 
 async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE) -> None:
     app.logger.error("Exception while handling an update:", exc_info=context.error)
+    sentry_sdk.capture_exception(context.error)
 
 
 # def poll_for_updates():
@@ -623,8 +624,7 @@ async def logging_handler(update: Update, context: CallbackContext):
     app.logger.info(f"Received message: {str(update)}")
 
 
-# thread = threading.Thread(target=poll_for_updates)
-# thread.start()
+bot.add_handler(TypeHandler(Update, logging_handler), group=-1)
 
 bot.add_handler(CommandHandler("subscribe", cmd_subscribe))
 bot.add_handler(CommandHandler("unsubscribe", cmd_unsubscribe))
@@ -640,13 +640,10 @@ bot.add_handler(InlineQueryHandler(handle_inline_query))
 
 bot.add_handler(CallbackQueryHandler(button_callback))
 
-bot.add_handler(TypeHandler(Update, logging_handler))
-
 bot.add_error_handler(error_handler)
 
-if __name__ == "__main__":
-    threading.Thread(
-        target=lambda: app.run(port=settings.PORT, debug=True, use_reloader=False)
-    ).start()
+threading.Thread(
+    target=lambda: app.run(host="0.0.0.0", port=settings.PORT, debug=True, use_reloader=False)
+).start()
 
 bot.run_polling()
