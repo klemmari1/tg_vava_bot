@@ -441,12 +441,12 @@ async def button_callback(update: Update, context: CallbackContext) -> None:
 
         if not selected_categories_text:
             await query.edit_message_text(
-                text="*Tilasit kaikki kategoriat*",
+                text="*Tilasit tarjousviestit kaikista kategorioista*",
                 parse_mode="MarkdownV2",
             )
         else:
             await query.edit_message_text(
-                f"Tilasit kategoriat:\n{selected_categories_text}",
+                f"Tilasit tarjousviestit kategorioista:\n{selected_categories_text}",
                 parse_mode="MarkdownV2",
             )
         return
@@ -494,9 +494,9 @@ async def cmd_subscribe(update: Update, context: CallbackContext):
     # )
     """Sends a message with the category selection attached."""
     await update.message.reply_text(
-        "Valitse kategoriat joihin liittyen haluat tarjousviestejä\n"
-        "Paina lopuksi *_Tilaa_*\n\n"
-        "Paina vain *_Tilaa_* jos haluat tilata kaikki kategoriat\n",
+        "Valitse kategoriat joihin liittyen haluat tarjousviestejä\."
+        "Paina lopuksi *Tilaa*\n\n"
+        "Paina vain *Tilaa* jos haluat tilata kaikki kategoriat\.\n",
         parse_mode="MarkdownV2",
         reply_markup=get_category_keyboard(),
     )
