@@ -406,7 +406,7 @@ async def button_callback(update: Update, context: CallbackContext) -> None:
     await query.answer()
 
     user_id = query.from_user.id
-    chat_id = update.message.chat_id
+    chat_id = query.message.chat.id
 
     # Handle submission
     if query.data == "tilaa":
