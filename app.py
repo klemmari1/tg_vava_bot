@@ -119,19 +119,20 @@ not_found_captions = [
 ]
 
 
-CATEGORIES = [
-    "Tekniikka ja elektroniikka",
-    "Työkalut ja rakennustarvikkeet",
-    "Koti ja sisustus",
-    "Vaatetus",
-    "Harrastusvälineet ja -tarvikkeet",
-    "Autot ja ajoneuvot",
-    "Ruoka ja juomat",
-    "Kirjat ja lehdet",
-    "Peliaiheiset tuotteet",
-    "Tietokoneen komponentit",
-    "Muut",
-]
+CATEGORIES = {
+    1: "Tekniikka ja elektroniikka",
+    2: "Työkalut ja rakennustarvikkeet",
+    3: "Koti ja sisustus",
+    4: "Vaatetus",
+    5: "Harrastusvälineet ja -tarvikkeet",
+    6: "Autot ja ajoneuvot",
+    7: "Ruoka ja juomat",
+    8: "Kirjat ja lehdet",
+    9: "Peliaiheiset tuotteet",
+    10: "Tietokoneen komponentit",
+    11: "Muut",
+}
+
 
 OPENAI_CONVERSATION_HISTORY = {}
 
@@ -411,10 +412,12 @@ async def button_callback(update: Update, context: CallbackContext) -> None:
 
     # Handle submission
     if query.data == "tilaa":
-        selected_text = ""
+        selected_categories_text = ""
         selected_categories = []
         if user_id in SELECTED_CATEGORIES and SELECTED_CATEGORIES[user_id]:
-            selected_text = ", ".join(opt for opt in SELECTED_CATEGORIES[user_id])
+            selected_categories_text = ""
+            for idx in SELECTED_CATEGORIES[user_id]:
+                selected_categories_text += f"- *{CATEGORIES[int(idx)]}*\n"
             selected_categories = SELECTED_CATEGORIES[user_id]
 
         data = {
@@ -432,11 +435,15 @@ async def button_callback(update: Update, context: CallbackContext) -> None:
         # chat.subscribe()
         del SELECTED_CATEGORIES[user_id]
 
-        if not selected_text:
-            await query.edit_message_text(f"You subscribed to all categories.")
+        if not selected_categories_text:
+            await query.edit_message_text(
+                text="*Tilasit kaikki kategoriat*",
+                parse_mode="MarkdownV2",
+            )
         else:
             await query.edit_message_text(
-                f"You subscribed to categories: {selected_text}"
+                f"*Tilasit kategoriat:*\n{selected_categories_text}",
+                parse_mode="MarkdownV2",
             )
         return
 
