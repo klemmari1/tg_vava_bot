@@ -435,7 +435,8 @@ async def button_callback(update: Update, context: CallbackContext) -> None:
         #     str(chat_id),
         # )
         # chat.subscribe()
-        del SELECTED_CATEGORIES[user_id]
+        if SELECTED_CATEGORIES[user_id]:
+            del SELECTED_CATEGORIES[user_id]
 
         if not selected_categories_text:
             await query.edit_message_text(
