@@ -118,7 +118,6 @@ not_found_captions = [
     "Your query did not match any images.",
 ]
 
-
 CATEGORIES = {
     1: "Tekniikka ja elektroniikka",
     2: "Työkalut ja rakennustarvikkeet",
@@ -132,7 +131,6 @@ CATEGORIES = {
     10: "Tietokoneen komponentit",
     11: "Muut",
 }
-
 
 OPENAI_CONVERSATION_HISTORY = {}
 
@@ -368,8 +366,8 @@ async def cmd_inspis(update: Update, context: CallbackContext):
     url = "https://inspirobot.me/api?generate=true"
     headers = {
         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5)"
-        "AppleWebKit/537.36 (KHTML, like Gecko)"
-        "Chrome/50.0.2661.102 Safari/537.36"
+                      "AppleWebKit/537.36 (KHTML, like Gecko)"
+                      "Chrome/50.0.2661.102 Safari/537.36"
     }
     response = requests.get(url, headers=headers, timeout=settings.REQUEST_TIMEOUT)
     url = response.content.decode("utf-8")
@@ -417,7 +415,7 @@ async def button_callback(update: Update, context: CallbackContext) -> None:
         if user_id in SELECTED_CATEGORIES and SELECTED_CATEGORIES[user_id]:
             selected_categories_text = ""
             for idx in SELECTED_CATEGORIES[user_id]:
-                selected_categories_text += f"- *{CATEGORIES[int(idx)]}*\n"
+                selected_categories_text += f"*\- {CATEGORIES[int(idx)]}*\n"
             selected_categories = SELECTED_CATEGORIES[user_id]
 
         data = {
@@ -516,16 +514,16 @@ def google_search(search_terms):
         searchType = "image"
         gl = "fi"
         url = (
-            "https://www.googleapis.com/customsearch/v1?q="
-            + search_terms
-            + "&key="
-            + settings.GOOGLE_SEARCH_KEY
-            + "&cx="
-            + settings.GOOGLE_SEARCH_CX
-            + "&searchType="
-            + searchType
-            + "&gl="
-            + gl
+                "https://www.googleapis.com/customsearch/v1?q="
+                + search_terms
+                + "&key="
+                + settings.GOOGLE_SEARCH_KEY
+                + "&cx="
+                + settings.GOOGLE_SEARCH_CX
+                + "&searchType="
+                + searchType
+                + "&gl="
+                + gl
         )
         contents = requests.get(url, timeout=settings.REQUEST_TIMEOUT).text
         json_response = json.loads(contents)
