@@ -429,7 +429,7 @@ async def button_callback(update: Update, context: CallbackContext) -> None:
         }
         requests.post(
             f"{settings.TARJOUSHAUKKA_URL}/chat",
-            data=data,
+            json=data,
         )
         # chat = chats.Chat(
         #     str(chat_id),
