@@ -36,7 +36,6 @@ from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, InlineQ
 from telegram.ext import CommandHandler, CallbackQueryHandler, CallbackContext, Application, InlineQueryHandler
 
 import chatbot
-import chats
 import settings
 import tgbot
 from chats import Chat, db
@@ -270,9 +269,13 @@ async def handle_inline_query(update: Update, context: CallbackContext):
 
 
 async def cmd_img(update: Update, context: CallbackContext):
-    query = update.inline_query.query
-    if not query:
+    if not context.args:
         await update.message.reply_text(text="No query provided")
+        return
+
+    query = context.args[0]
+    app.logger.info(f"Image query: {query}")
+
     # Get results with a query
     items = google_search(query)
     if items == -1:
@@ -295,7 +298,11 @@ async def cmd_img(update: Update, context: CallbackContext):
 
 
 async def cmd_puppu(update: Update, context: CallbackContext):
-    query = update.inline_query.query
+    query = ""
+    if context.args:
+        query = context.args[0]
+    app.logger.info(f"Puppu query: {query}")
+
     query = urllib.parse.quote_plus(query, safe="", encoding="utf-8", errors=None)
     url = "http://puppulausegeneraattori.fi/?avainsana=" + query
     response = urllib.request.urlopen(url, timeout=settings.REQUEST_TIMEOUT).read()
@@ -323,6 +330,7 @@ async def cmd_inspis(update: Update, context: CallbackContext):
 
 async def cmd_help(update: Update, context: CallbackContext):
     help_text = __doc__
+    app.logger.info("Sending help text")
     await update.message.reply_text(
         help_text,
     )
@@ -483,7 +491,12 @@ def google_search(search_terms):
 
 
 async def test_img(update: Update, context: CallbackContext):
-    query = update.inline_query.query
+    query = ""
+    if context.args:
+        query = context.args[0]
+
+    app.logger.info(f"Image query: {query}")
+
     if query == "1":
         await daily_limit(update, context)
     await not_found(update, context)
@@ -511,14 +524,23 @@ async def not_found(update: Update, context: CallbackContext):
 
 
 async def cmd_ask(update: Update, context: CallbackContext):
-    chat_id = update.message.chat_id
-    query = update.inline_query.query
+    chat_id = str(update.message.chat_id)
+
+    query = ""
+    if context.args:
+        query = context.args[0]
+    app.logger.info(f"Ask query: {query}")
+
+    if not query:
+        await update.message.reply_text("No question provided")
+        return
 
     if chat_id not in settings.OPENAI_CHAT_IDS:
-        bot.sendMessage(
-            chat_id=chat_id,
-            text="GPT-4 not enabled in this chat",
-        )
+        # bot.sendMessage(
+        #     chat_id=chat_id,
+        #     text="GPT-4 not enabled in this chat",
+        # )
+        await update.message.reply_text("GPT-4 not enabled in this chat")
         return
 
     gpt_response = chatbot.query(
@@ -539,7 +561,7 @@ async def cmd_ask(update: Update, context: CallbackContext):
 
 
 async def cmd_reset(update: Update, context: CallbackContext):
-    chat_id = update.message.chat_id
+    chat_id = str(update.message.chat_id)
     if chat_id not in settings.OPENAI_CHAT_IDS:
         # bot.sendMessage(
         #     chat_id=chat_id,
@@ -548,9 +570,9 @@ async def cmd_reset(update: Update, context: CallbackContext):
         await update.message.reply_text(
             "GPT-4 not enabled in this chat"
         )
+        return
 
     reset_conversation_history([chat_id])
-
     await update.message.reply_text("GPT-4 chat history reset")
 
 
