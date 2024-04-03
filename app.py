@@ -584,7 +584,7 @@ if __name__ == '__main__':
     application.add_handler(InlineQueryHandler(handle_inline_query))
 
     application.add_handler(CallbackQueryHandler(button_callback))
-    
+
     threading.Thread(target=lambda: app.run(port=settings.PORT, debug=True, use_reloader=False)).start()
-    
+
     application.run_polling()

@@ -16,6 +16,5 @@ requests
 riotwatcher
 sqlalchemy
 sentry-sdk[flask]
-uvicorn
 werkzeug
 wikipedia
