@@ -49,6 +49,7 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
+
 @dataclass
 class WebhookUpdate:
     """Simple dataclass to wrap a custom update type"""
@@ -220,7 +221,7 @@ def send_alert():
         #     app.logger.info("SEND ALERT:")
         #     app.logger.info(response.status_code)
         #     app.logger.info(response.content)
-        bot.update_queue.put(WebhookUpdate(chat_id=int(chat_id), payload=message))
+        bot.send_message(int(chat_id), message)
 
     return "OK"
 
@@ -346,11 +347,13 @@ async def cmd_inspis(update: Update, context: CallbackContext):
 
 
 async def cmd_help(update: Update, context: CallbackContext):
+    print(update.message.chat_id)
     help_text = __doc__
     app.logger.info("Sending help text")
     await update.message.reply_text(
         help_text,
-        parse_mode='MarkdownV2'
+        parse_mode='MarkdownV2',
+        disable_notification=True,
     )
     # bot.sendMessage(
     #     chat_id=chat_id,
