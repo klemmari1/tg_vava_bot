@@ -480,8 +480,8 @@ async def cmd_subscribe(update: Update, context: CallbackContext):
     # )
     """Sends a message with the category selection attached."""
     await update.message.reply_text(
-        "*Valitse kategoriat joihin liittyen haluat tarjousviestejä.* \n\n"
-        "*Paina 'Tilaa' jos haluat tilata kaikki kategoriat.* \n",
+        "*Valitse kategoriat joihin liittyen haluat tarjousviestejä* \n\n"
+        "*Paina 'Tilaa' jos haluat tilata kaikki kategoriat* \n",
         parse_mode="MarkdownV2",
         reply_markup=get_category_keyboard(),
     )
@@ -620,7 +620,7 @@ async def cmd_reset(update: Update, context: CallbackContext):
 
 
 async def logging_handler(update: Update, context: CallbackContext):
-    app.logger.info(f"Received message: {update.message.text}")
+    app.logger.info(f"Received message: {str(update)}")
 
 
 # thread = threading.Thread(target=poll_for_updates)
