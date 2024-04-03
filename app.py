@@ -20,6 +20,7 @@
 /help \- Show this help message
 """  # noqa
 
+import asyncio
 import json
 import logging
 import random
@@ -31,6 +32,7 @@ from logging.config import dictConfig
 import jwt
 import requests
 import sentry_sdk
+import telegram
 from bs4 import BeautifulSoup
 from flask import Flask, request, Response
 from sentry_sdk.integrations.flask import FlaskIntegration
@@ -191,6 +193,10 @@ reset_conversation_history()
 #         return "webhook delete failed"
 
 
+async def send_message_to_chat(chat_id: int, text: str) -> None:
+    await telegram.Bot(settings.TELEGRAM_TOKEN).send_message(chat_id=chat_id, text=text)
+
+
 def decode_auth_token(auth_token):
     try:
         jwt.decode(auth_token, settings.EXTERNAL_ENDPOINT_KEY, algorithms=["HS256"])
@@ -221,7 +227,7 @@ def send_alert():
         #     app.logger.info("SEND ALERT:")
         #     app.logger.info(response.status_code)
         #     app.logger.info(response.content)
-        bot.send_message(int(chat_id), message)
+        asyncio.new_event_loop().run_until_complete(send_message_to_chat(int(chat_id), message))
 
     return "OK"
 
