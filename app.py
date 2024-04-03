@@ -24,6 +24,7 @@ import json
 import random
 import threading
 import urllib
+from dataclasses import dataclass
 from logging.config import dictConfig
 
 import jwt
@@ -37,8 +38,16 @@ from telegram.ext import CommandHandler, CallbackQueryHandler, CallbackContext, 
 
 import chatbot
 import settings
-import tgbot
 from chats import Chat, db
+
+
+@dataclass
+class WebhookUpdate:
+    """Simple dataclass to wrap a custom update type"""
+
+    chat_id: int
+    payload: str
+
 
 dictConfig(
     {
@@ -80,8 +89,7 @@ sentry_sdk.init(
     traces_sample_rate=1.0,
 )
 
-bot = tgbot.TgbotConnection(settings.TELEGRAM_TOKEN)
-
+bot = Application.builder().token(settings.TELEGRAM_TOKEN).build()
 
 error_images = [
     "https://github.com/klemmari1/tg_vava_bot/raw/master/images/error.png",
@@ -186,24 +194,25 @@ def decode_auth_token(auth_token):
 @app.route("/send_alert", methods=["POST"])
 def send_alert():
     auth_token = request.headers.get("Authorization")
-    auth_succesfull = decode_auth_token(auth_token)
-    if not auth_succesfull:
+    auth_successful = decode_auth_token(auth_token)
+    if not auth_successful:
         return Response("Access denied!", 401)
 
-    message = request.data
+    message = request.data.decode("utf-8")
 
     chats = Chat.query.all()
     chat_ids = [chat.id for chat in chats]
     for chat_id in chat_ids:
-        response = bot.sendMessage(
-            chat_id=chat_id,
-            text=message,
-            disable_web_page_preview=True,
-        )
-        if response:
-            app.logger.info("SEND ALERT:")
-            app.logger.info(response.status_code)
-            app.logger.info(response.content)
+        # response = bot.sendMessage(
+        #     chat_id=chat_id,
+        #     text=message,
+        #     disable_web_page_preview=True,
+        # )
+        # if response:
+        #     app.logger.info("SEND ALERT:")
+        #     app.logger.info(response.status_code)
+        #     app.logger.info(response.content)
+        bot.update_queue.put(WebhookUpdate(chat_id=int(chat_id), payload=message))
 
     return "OK"
 
@@ -581,7 +590,6 @@ async def cmd_reset(update: Update, context: CallbackContext):
 
 
 if __name__ == '__main__':
-    application = Application.builder().token(settings.TELEGRAM_TOKEN).build()
 
     # "/img": cmd_img,
     # "/puppu": cmd_puppu,
@@ -593,20 +601,20 @@ if __name__ == '__main__':
     # "/help": cmd_help,
     # "/vtest": test_img,
 
-    application.add_handler(CommandHandler('subscribe', cmd_subscribe))
-    application.add_handler(CommandHandler('unsubscribe', cmd_unsubscribe))
-    application.add_handler(CommandHandler('img', cmd_img))
-    application.add_handler(CommandHandler('puppu', cmd_puppu))
-    application.add_handler(CommandHandler('inspis', cmd_inspis))
-    application.add_handler(CommandHandler('ask', cmd_ask))
-    application.add_handler(CommandHandler('reset', cmd_reset))
-    application.add_handler(CommandHandler('help', cmd_help))
-    application.add_handler(CommandHandler('vtest', test_img))
+    bot.add_handler(CommandHandler('subscribe', cmd_subscribe))
+    bot.add_handler(CommandHandler('unsubscribe', cmd_unsubscribe))
+    bot.add_handler(CommandHandler('img', cmd_img))
+    bot.add_handler(CommandHandler('puppu', cmd_puppu))
+    bot.add_handler(CommandHandler('inspis', cmd_inspis))
+    bot.add_handler(CommandHandler('ask', cmd_ask))
+    bot.add_handler(CommandHandler('reset', cmd_reset))
+    bot.add_handler(CommandHandler('help', cmd_help))
+    bot.add_handler(CommandHandler('vtest', test_img))
 
-    application.add_handler(InlineQueryHandler(handle_inline_query))
+    bot.add_handler(InlineQueryHandler(handle_inline_query))
 
-    application.add_handler(CallbackQueryHandler(button_callback))
+    bot.add_handler(CallbackQueryHandler(button_callback))
 
     threading.Thread(target=lambda: app.run(port=settings.PORT, debug=True, use_reloader=False)).start()
 
-    application.run_polling()
+    bot.run_polling()
