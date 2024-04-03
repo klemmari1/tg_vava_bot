@@ -495,7 +495,7 @@ async def cmd_subscribe(update: Update, context: CallbackContext):
     """Sends a message with the category selection attached."""
     await update.message.reply_text(
         "Valitse kategoriat joihin liittyen haluat tarjousviestejä\. "
-        "Paina lopuksi *Tilaa*\n\n"
+        "Paina lopuksi *Tilaa*\.\n\n"
         "Paina vain *Tilaa* jos haluat tilata kaikki kategoriat\.\n",
         parse_mode="MarkdownV2",
         reply_markup=get_category_keyboard(),
