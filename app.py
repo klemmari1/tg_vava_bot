@@ -125,7 +125,7 @@ CATEGORIES = {
     4: "Vaatetus",
     5: "Harrastusvälineet ja tarvikkeet",
     6: "Autot ja ajoneuvot",
-    7: "Ruoka ja juomat",
+    7: "Ruoka ja juoma",
     8: "Kirjat ja lehdet",
     9: "Peliaiheiset tuotteet",
     10: "Tietokoneen komponentit",
