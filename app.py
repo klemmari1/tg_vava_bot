@@ -413,9 +413,8 @@ async def button_callback(update: Update, context: CallbackContext) -> None:
         selected_categories_text = ""
         selected_categories = []
         if user_id in SELECTED_CATEGORIES and SELECTED_CATEGORIES[user_id]:
-            selected_categories_text = ""
             for idx in SELECTED_CATEGORIES[user_id]:
-                selected_categories_text += f"*\- {CATEGORIES[int(idx)]}*\n"
+                selected_categories_text += f"*— {CATEGORIES[int(idx)]}*\n"
             selected_categories = SELECTED_CATEGORIES[user_id]
 
         data = {
