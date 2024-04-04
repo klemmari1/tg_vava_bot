@@ -323,7 +323,7 @@ async def cmd_img(update: Update, context: CallbackContext):
         await update.message.reply_text(text="No query provided")
         return
 
-    query = context.args[0]
+    query = " ".join(context.args)
 
     # Get results with a query
     items = google_search(query)
@@ -349,7 +349,7 @@ async def cmd_img(update: Update, context: CallbackContext):
 async def cmd_puppu(update: Update, context: CallbackContext):
     query = ""
     if context.args:
-        query = context.args[0]
+        query = " ".join(context.args)
 
     query = urllib.parse.quote_plus(query, safe="", encoding="utf-8", errors=None)
     url = "http://puppulausegeneraattori.fi/?avainsana=" + query
@@ -545,7 +545,7 @@ def google_search(search_terms):
 async def test_img(update: Update, context: CallbackContext):
     query = ""
     if context.args:
-        query = context.args[0]
+        query = " ".join(context.args)
 
     app.logger.info(f"Image query: {query}")
 
@@ -629,7 +629,6 @@ async def cmd_reset(update: Update, context: CallbackContext):
 
 async def logging_handler(update: Update, context: CallbackContext):
     app.logger.info(f"Received message: {str(update)}")
-    app.logger.info(f"Context args: {str(context.args)}")
 
 
 bot.add_handler(TypeHandler(Update, logging_handler), group=-1)
