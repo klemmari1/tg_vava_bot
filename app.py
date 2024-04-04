@@ -508,7 +508,10 @@ async def cmd_unsubscribe(update: Update, context: CallbackContext):
     #     chat_id=chat_id,
     #     text=text,
     # )
-    await update.message.reply_text(response.json()["status"])
+    await update.message.reply_text(
+        f'*{response.json()["status"]}*',
+        parse_mode="MarkdownV2",
+    )
 
 
 def google_search(search_terms):
