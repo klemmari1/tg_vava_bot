@@ -295,10 +295,10 @@ def index():
 
 
 async def handle_inline_query(update: Update, context: CallbackContext):
+    results = []
     query = update.inline_query.query
     if query != "":
         items = google_search(query)
-        results = []
         if isinstance(items, list):
             # response = bot.sendInlineResponse(
             #     inline_query_id=inline_query_id, items=items
@@ -313,8 +313,7 @@ async def handle_inline_query(update: Update, context: CallbackContext):
                         thumbnail_url=thumb_url,
                     )
                 )
-            await update.inline_query.answer(results)
-    await update.inline_query.answer([])
+    await update.inline_query.answer(results)
 
 
 async def cmd_img(update: Update, context: CallbackContext):
