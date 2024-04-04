@@ -11,9 +11,10 @@ openai
 pip-tools
 psycopg2-binary
 pyjwt
+python-telegram-bot
 requests
 riotwatcher
 sqlalchemy
+sentry-sdk[flask]
 werkzeug
 wikipedia
-sentry-sdk[flask]
