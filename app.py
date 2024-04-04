@@ -494,18 +494,21 @@ async def cmd_subscribe(update: Update, context: CallbackContext):
 
 
 async def cmd_unsubscribe(update: Update, context: CallbackContext):
-    chat_id = str(update.effective_chat.id)
-    chat = Chat.query.get(chat_id)
-    if chat:
-        chat.unsubscribe()
-        text = "Unsubscribed from bargain alerts!"
-    else:
-        text = "Chat is not subscribed to bargain alerts!"
+    chat_id = str(update.message.chat_id)
+    data = {
+        "chat-id": chat_id,
+        "sub-type": "unsubscribe",
+    }
+    response = requests.post(
+        f"{settings.TARJOUSHAUKKA_URL}/chat",
+        data=data,
+    )
+    # chat = Chat.query.get(chat_id)
     # bot.sendMessage(
     #     chat_id=chat_id,
     #     text=text,
     # )
-    await update.message.reply_text(text)
+    await update.message.reply_text(response.content)
 
 
 def google_search(search_terms):
