@@ -296,7 +296,6 @@ def index():
 
 async def handle_inline_query(update: Update, context: CallbackContext):
     query = update.inline_query.query
-    query_id = update.inline_query.id
     if query != "":
         items = google_search(query)
         results = []
