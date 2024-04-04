@@ -239,24 +239,23 @@ def send_alert():
     if not auth_successful:
         return Response("Access denied!", 401)
 
-    message = request.data.decode("utf-8")
+    message = request.form.get("message")
+    chat_ids = request.form.getlist("chat_ids")
 
-    chats = Chat.query.all()
-    chat_ids = [chat.id for chat in chats]
+    # chats = Chat.query.all()
+    # chat_ids = [chat.id for chat in chats]
     for chat_id in chat_ids:
         # response = bot.sendMessage(
         #     chat_id=chat_id,
         #     text=message,
         #     disable_web_page_preview=True,
         # )
-        # if response:
-        #     app.logger.info("SEND ALERT:")
-        #     app.logger.info(response.status_code)
-        #     app.logger.info(response.content)
+        app.logger.info("SEND ALERT:")
+        app.logger.info(chat_id)
+        app.logger.info(message)
         asyncio.new_event_loop().run_until_complete(
             send_message_to_chat(int(chat_id), message)
         )
-
     return "OK"
 
 
