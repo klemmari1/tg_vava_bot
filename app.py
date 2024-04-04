@@ -298,8 +298,6 @@ async def handle_inline_query(update: Update, context: CallbackContext):
     query = update.inline_query.query
     query_id = update.inline_query.id
     if query != "":
-        app.logger.info("inline query id: " + str(query_id))
-        app.logger.info("inline query args: " + str(query))
         items = google_search(query)
         results = []
         if isinstance(items, list):
@@ -326,7 +324,6 @@ async def cmd_img(update: Update, context: CallbackContext):
         return
 
     query = context.args[0]
-    app.logger.info(f"Image query: {query}")
 
     # Get results with a query
     items = google_search(query)
@@ -353,7 +350,6 @@ async def cmd_puppu(update: Update, context: CallbackContext):
     query = ""
     if context.args:
         query = context.args[0]
-    app.logger.info(f"Puppu query: {query}")
 
     query = urllib.parse.quote_plus(query, safe="", encoding="utf-8", errors=None)
     url = "http://puppulausegeneraattori.fi/?avainsana=" + query
@@ -361,7 +357,7 @@ async def cmd_puppu(update: Update, context: CallbackContext):
     soup = BeautifulSoup(response, "html.parser")
     text = soup.find("p", {"class": "lause"})
     text = text.contents[0]
-    app.logger.info(text)
+    app.logger.info(f"Puppulause: {text}")
     # bot.sendMessage(chat_id=chat_id, text=text)
     await update.message.reply_text(text.text)
 
@@ -375,14 +371,12 @@ async def cmd_inspis(update: Update, context: CallbackContext):
     }
     response = requests.get(url, headers=headers, timeout=settings.REQUEST_TIMEOUT)
     url = response.content.decode("utf-8")
-    app.logger.info(url)
     # bot.sendPhoto(chat_id=chat_id, photo=url)
     await update.message.reply_photo(url)
 
 
 async def cmd_help(update: Update, context: CallbackContext):
     help_text = __doc__
-    app.logger.info("Sending help text")
     await update.message.reply_text(
         help_text,
         parse_mode="MarkdownV2",
@@ -588,8 +582,7 @@ async def cmd_ask(update: Update, context: CallbackContext):
 
     query = ""
     if context.args:
-        query = context.args[0]
-    app.logger.info(f"Ask query: {query}")
+        query = " ".join(context.args)
 
     if not query:
         await update.message.reply_text("No question provided")
@@ -636,6 +629,7 @@ async def cmd_reset(update: Update, context: CallbackContext):
 
 async def logging_handler(update: Update, context: CallbackContext):
     app.logger.info(f"Received message: {str(update)}")
+    app.logger.info(f"Context args: {str(context.args)}")
 
 
 bot.add_handler(TypeHandler(Update, logging_handler), group=-1)
