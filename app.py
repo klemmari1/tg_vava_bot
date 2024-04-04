@@ -27,6 +27,7 @@ import threading
 import urllib
 from dataclasses import dataclass
 from logging.config import dictConfig
+from uuid import uuid4
 
 import jwt
 import requests
@@ -309,7 +310,7 @@ async def handle_inline_query(update: Update, context: CallbackContext):
                 thumb_url = item["image"]["thumbnailLink"]
                 results.append(
                     InlineQueryResultPhoto(
-                        id=query_id,
+                        id=str(uuid4()),
                         photo_url=photo_url,
                         thumbnail_url=thumb_url,
                     )
