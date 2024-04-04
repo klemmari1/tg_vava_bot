@@ -122,7 +122,7 @@ CATEGORIES = {
     1: "Tekniikka ja elektroniikka",
     2: "Työkalut ja rakennustarvikkeet",
     3: "Koti ja sisustus",
-    4: "Vaatetus",
+    4: "Vaatteet",
     5: "Harrastusvälineet ja tarvikkeet",
     6: "Autot ja ajoneuvot",
     7: "Ruoka ja juoma",
