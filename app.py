@@ -42,7 +42,6 @@ from telegram import (
     Update,
 )
 from telegram.ext import (
-    Application,
     CallbackContext,
     CallbackQueryHandler,
     CommandHandler,
@@ -53,7 +52,7 @@ from telegram.ext import (
 
 import chatbot
 import settings
-from chats import Chat, db
+from tg_builder import TGBuilder
 
 
 @dataclass
@@ -85,15 +84,6 @@ dictConfig(
 
 app = Flask(__name__)
 
-# DB Setup
-conn_str = settings.DATABASE_URL
-app.config["SQLALCHEMY_DATABASE_URI"] = conn_str
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-
-db.init_app(app)
-app.app_context().push()
-db.create_all()
-
 # Sentry setup
 sentry_sdk.init(
     dsn=settings.SENTRY_DSN,
@@ -104,7 +94,7 @@ sentry_sdk.init(
     traces_sample_rate=1.0,
 )
 
-bot = Application.builder().token(settings.TELEGRAM_TOKEN).build()
+bot = TGBuilder().token(settings.TELEGRAM_TOKEN).build()
 
 error_images = [
     "https://github.com/klemmari1/tg_vava_bot/raw/master/images/error.png",
@@ -127,7 +117,7 @@ CATEGORIES = {
     6: "Autot ja ajoneuvot",
     7: "Ruoka ja juoma",
     8: "Kirjat ja lehdet",
-    9: "Peliaiheiset tuotteet",
+    9: "Pelit ja peliaiheiset tuotteet",
     10: "Tietokoneen komponentit",
     11: "Muut",
 }
@@ -363,8 +353,8 @@ async def cmd_inspis(update: Update, context: CallbackContext):
     url = "https://inspirobot.me/api?generate=true"
     headers = {
         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5)"
-                      "AppleWebKit/537.36 (KHTML, like Gecko)"
-                      "Chrome/50.0.2661.102 Safari/537.36"
+        "AppleWebKit/537.36 (KHTML, like Gecko)"
+        "Chrome/50.0.2661.102 Safari/537.36"
     }
     response = requests.get(url, headers=headers, timeout=settings.REQUEST_TIMEOUT)
     url = response.content.decode("utf-8")
@@ -520,16 +510,16 @@ def google_search(search_terms):
         searchType = "image"
         gl = "fi"
         url = (
-                "https://www.googleapis.com/customsearch/v1?q="
-                + search_terms
-                + "&key="
-                + settings.GOOGLE_SEARCH_KEY
-                + "&cx="
-                + settings.GOOGLE_SEARCH_CX
-                + "&searchType="
-                + searchType
-                + "&gl="
-                + gl
+            "https://www.googleapis.com/customsearch/v1?q="
+            + search_terms
+            + "&key="
+            + settings.GOOGLE_SEARCH_KEY
+            + "&cx="
+            + settings.GOOGLE_SEARCH_CX
+            + "&searchType="
+            + searchType
+            + "&gl="
+            + gl
         )
         contents = requests.get(url, timeout=settings.REQUEST_TIMEOUT).text
         json_response = json.loads(contents)
@@ -653,7 +643,10 @@ bot.add_handler(CallbackQueryHandler(button_callback))
 bot.add_error_handler(error_handler)
 
 threading.Thread(
-    target=lambda: app.run(host="0.0.0.0", port=settings.PORT, debug=True, use_reloader=False)
+    target=lambda: app.run(
+        host="0.0.0.0", port=settings.PORT, debug=True, use_reloader=False
+    )
 ).start()
+
 
 bot.run_polling()
