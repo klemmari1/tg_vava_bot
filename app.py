@@ -1,23 +1,23 @@
 # -*- encoding: utf8 -*-
 
 """
-@klemmari\_bot _query_ — Select and send an image from Google image search results with the given query
+@klemmari\_bot _query_ \- Select and send an image from Google image search results with the given query
 
-/img _query_ — Post the first image from Google image search with the given query \("I'm Feeling Lucky"\)
+/img _query_ \- Post the first image from Google image search with the given query \("I'm Feeling Lucky"\)
 
-/puppu _input_ — Generate a "puppulause" from the given input
+/puppu _input_ \- Generate a "puppulause" from the given input
 
-/inspis — Generate a random inspirational image
+/inspis \- Generate a random inspirational image
 
-/ask — Ask questions or talk to VavaBot
+/ask \- Ask questions or talk to VavaBot
 
-/reset — Reset VavaBot conversation history
+/reset \- Reset VavaBot conversation history
 
-/subscribe — Subscribe chat to bargain alerts
+/subscribe \- Subscribe chat to bargain alerts
 
-/unsubscribe — Unsubscribe chat from bargain alerts
+/unsubscribe \- Unsubscribe chat from bargain alerts
 
-/help — Show this help message
+/help \- Show this help message
 """  # noqa
 
 import asyncio
@@ -400,7 +400,7 @@ async def button_callback(update: Update, context: CallbackContext) -> None:
         if user_id in SELECTED_CATEGORIES and SELECTED_CATEGORIES[user_id]:
             for idx in SELECTED_CATEGORIES[user_id]:
                 category = CATEGORIES[int(idx)]
-                selected_categories_text += f"*— {category}*\n"
+                selected_categories_text += f"*\- {category}*\n"
                 selected_categories.append(category)
 
             if SELECTED_CATEGORIES[user_id]:
