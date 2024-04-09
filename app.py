@@ -204,16 +204,12 @@ async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE) -> N
 #         return "webhook delete failed"
 
 
-async def send_message_to_chat(context: ContextTypes.DEFAULT_TYPE) -> None:
-    await context.bot.send_message(
-        chat_id=context.job.chat_id,
-        text=context.job.data,
+async def send_message_to_chat(chat_id: int, text: str) -> None:
+    await bot.bot(settings.TELEGRAM_TOKEN).send_message(
+        chat_id=chat_id,
+        text=text,
         disable_web_page_preview=True,
     )
-
-
-async def queue_job(chat_id: int, text: str):
-    await bot.job_queue.run_once(send_message_to_chat, 0, data=text, chat_id=chat_id)
 
 
 def decode_auth_token(auth_token):
@@ -247,7 +243,7 @@ def send_alert():
         app.logger.info(chat_id)
         app.logger.info(message)
         asyncio.new_event_loop().run_until_complete(
-            queue_job(int(chat_id), message)
+            send_message_to_chat(int(chat_id), message)
         )
     return "OK"
 
