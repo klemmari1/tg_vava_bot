@@ -46,13 +46,6 @@ class TGRequest(HTTPXRequest):
             pool=pool_timeout,
         )
 
-        retry_strategy = httpx.Retry(
-            total=5,  # Total number of retries (including the initial request)
-            status_forcelist=[500, 502, 503, 504],  # HTTP status codes to retry
-            backoff_factor=0.5,  # Factor by which the delay increases after each retry
-            method_whitelist=["GET"],  # HTTP methods to retry
-        )
-
         transport = httpx.AsyncHTTPTransport(retries=3)
         async with httpx.AsyncClient(
             transport=transport, **self._client_kwargs
@@ -65,7 +58,6 @@ class TGRequest(HTTPXRequest):
                     timeout=timeout,
                     files=files,
                     data=data,
-                    retry_strategy=retry_strategy,
                 )
             except httpx.TimeoutException as err:
                 if isinstance(err, httpx.PoolTimeout):
