@@ -31,7 +31,6 @@ from logging.config import dictConfig
 import jwt
 import requests
 import sentry_sdk
-import telegram
 from bs4 import BeautifulSoup
 from flask import Flask, request, Response
 from sentry_sdk.integrations.flask import FlaskIntegration
@@ -206,7 +205,7 @@ async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE) -> N
 
 
 async def send_message_to_chat(chat_id: int, text: str) -> None:
-    await telegram.Bot(settings.TELEGRAM_TOKEN).send_message(
+    await bot.updater.bot.send_message(
         chat_id=chat_id,
         text=text,
         disable_web_page_preview=True,
