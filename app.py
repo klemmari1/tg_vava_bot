@@ -247,7 +247,7 @@ def send_alert():
         app.logger.info(chat_id)
         app.logger.info(message)
         asyncio.new_event_loop().run_until_complete(
-            send_message_to_chat(int(chat_id), message)
+            queue_job(int(chat_id), message)
         )
     return "OK"
 
