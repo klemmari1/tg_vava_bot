@@ -1,12 +1,42 @@
-from typing import TypeVar
+from typing import Collection, Optional, TypeVar, Union
 
-from telegram.ext import ApplicationBuilder
-from telegram.request import BaseRequest
+import httpx
 from telegram._utils.defaultvalue import DefaultValue
-
-from tg_request import TGRequest
+from telegram._utils.types import HTTPVersion, SocketOpt
+from telegram.ext import ApplicationBuilder
+from telegram.request import BaseRequest, HTTPXRequest
 
 BuilderType = TypeVar("BuilderType", bound="ApplicationBuilder")
+
+
+class TGRequest(HTTPXRequest):
+    def __init__(
+        self,
+        connection_pool_size: int = 1,
+        proxy_url: Optional[Union[str, httpx.Proxy, httpx.URL]] = None,
+        read_timeout: Optional[float] = 5.0,
+        write_timeout: Optional[float] = 5.0,
+        connect_timeout: Optional[float] = 5.0,
+        pool_timeout: Optional[float] = 1.0,
+        http_version: HTTPVersion = "1.1",
+        socket_options: Optional[Collection[SocketOpt]] = None,
+        proxy: Optional[Union[str, httpx.Proxy, httpx.URL]] = None,
+        media_write_timeout: Optional[float] = 20.0,
+    ):
+        super().__init__(
+            connection_pool_size,
+            proxy_url,
+            read_timeout,
+            write_timeout,
+            connect_timeout,
+            pool_timeout,
+            http_version,
+            socket_options,
+            proxy,
+            media_write_timeout,
+        )
+        transport = httpx.AsyncHTTPTransport(retries=3)
+        self._client._transport = transport
 
 
 class TGBuilder(ApplicationBuilder):
@@ -24,14 +54,18 @@ class TGBuilder(ApplicationBuilder):
             return getattr(self, f"{prefix}request")
 
         proxy = DefaultValue.get_value(getattr(self, f"{prefix}proxy"))
-        socket_options = DefaultValue.get_value(getattr(self, f"{prefix}socket_options"))
+        socket_options = DefaultValue.get_value(
+            getattr(self, f"{prefix}socket_options")
+        )
         if get_updates:
             connection_pool_size = (
-                DefaultValue.get_value(getattr(self, f"{prefix}connection_pool_size")) or 1
+                DefaultValue.get_value(getattr(self, f"{prefix}connection_pool_size"))
+                or 1
             )
         else:
             connection_pool_size = (
-                DefaultValue.get_value(getattr(self, f"{prefix}connection_pool_size")) or 256
+                DefaultValue.get_value(getattr(self, f"{prefix}connection_pool_size"))
+                or 256
             )
 
         timeouts = {
@@ -46,10 +80,14 @@ class TGBuilder(ApplicationBuilder):
 
         # Get timeouts that were actually set-
         effective_timeouts = {
-            key: value for key, value in timeouts.items() if not isinstance(value, DefaultValue)
+            key: value
+            for key, value in timeouts.items()
+            if not isinstance(value, DefaultValue)
         }
 
-        http_version = DefaultValue.get_value(getattr(self, f"{prefix}http_version")) or "1.1"
+        http_version = (
+            DefaultValue.get_value(getattr(self, f"{prefix}http_version")) or "1.1"
+        )
 
         return TGRequest(
             connection_pool_size=connection_pool_size,
