@@ -47,6 +47,7 @@ class TGRequest(HTTPXRequest):
         )
 
         transport = httpx.AsyncHTTPTransport(retries=3)
+        self._client_kwargs.pop("transport")
         async with httpx.AsyncClient(
             transport=transport, **self._client_kwargs
         ) as client:
