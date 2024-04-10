@@ -41,7 +41,7 @@ class TGRequest(HTTPXRequest):
             proxy,
             media_write_timeout,
         )
-        transport = httpx.AsyncHTTPTransport(retries=3)
+        transport = httpx.AsyncHTTPTransport(retries=5)
         self._client._transport = transport
 
 
