@@ -18,7 +18,7 @@ beautifulsoup4==4.12.0
     # via
     #   -r requirements.in
     #   wikipedia
-black==23.3.0
+black==24.3.0
     # via -r requirements.in
 blinker==1.5
     # via sentry-sdk
