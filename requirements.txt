@@ -148,7 +148,7 @@ tomli==2.0.1
     #   black
     #   build
     #   pyproject-hooks
-tqdm==4.65.0
+tqdm==4.66.3
     # via openai
 typing-extensions==4.5.0
     # via
