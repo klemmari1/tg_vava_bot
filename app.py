@@ -643,11 +643,15 @@ bot.add_handler(CallbackQueryHandler(button_callback))
 
 bot.add_error_handler(error_handler)
 
-threading.Thread(
+app_thread = threading.Thread(
     target=lambda: app.run(
         host="0.0.0.0", port=settings.PORT, debug=True, use_reloader=False
     )
-).start()
+)
+app_thread.start()
 
 
 bot.run_polling()
+
+# Stop the Flask app thread when the bot stops
+app_thread.join()
