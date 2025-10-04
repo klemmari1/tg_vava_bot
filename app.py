@@ -333,16 +333,9 @@ async def cmd_img(update: Update, context: CallbackContext):
     elif items is None:
         # Send image about image not found
         await not_found(update, context)
-    # Send image that does not give client errors
-    for item in items:
-        url = item["link"]
-        await update.message.reply_photo(url)
-        # response = bot.sendPhoto(chat_id=chat_id, photo=url)
-        # if response and response.status_code != 200:
-        #    app.logger.info(str(response))
-        # else:
-        #    break
-
+    # Send image
+    url = items[0]["link"]
+    await update.message.reply_photo(url)
 
 async def cmd_puppu(update: Update, context: CallbackContext):
     query = ""
@@ -605,6 +598,10 @@ async def cmd_ask(update: Update, context: CallbackContext):
     #     chat_id=chat_id,
     #     text=gpt_response,
     # )
+    if not gpt_response:
+        await update.message.reply_text("No response from AI")
+        return
+
     await update.message.reply_text(gpt_response)
 
     if gpt_response == "Token limit reached":
