@@ -295,6 +295,7 @@ def index():
 
 async def handle_inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.inline_query.query
+    app.logger.info(f"Handling inline query: {query}")
     if not query:  # empty query should not be handled
         return
 
@@ -393,6 +394,7 @@ def get_category_keyboard():
 async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Parses the CallbackQuery and updates the message text."""
     query = update.callback_query
+    app.logger.info(f"Handling button callback: {query}")
     await query.answer()
 
     user_id = query.from_user.id
