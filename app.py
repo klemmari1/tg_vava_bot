@@ -332,12 +332,16 @@ async def cmd_img(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await daily_limit(update, context)
     elif items == -2:
         await update.message.reply_text("Exception occurred")
-    elif items is None:
+    elif not items:
         # Send image about image not found
         await not_found(update, context)
     # Send image
-    url = items[0]["link"]
-    await update.message.reply_photo(url)
+    if isinstance(items, list) and len(items) > 0:
+        url = items[0]["link"]
+        await update.message.reply_photo(url)
+        return
+    await not_found(update, context)
+
 
 async def cmd_puppu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = ""
