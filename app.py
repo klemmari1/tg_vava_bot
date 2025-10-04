@@ -43,7 +43,6 @@ from telegram import (
 )
 from telegram.ext import (
     Application,
-    CallbackContext,
     CallbackQueryHandler,
     CommandHandler,
     ContextTypes,
@@ -294,29 +293,31 @@ def index():
 #             commands[cmdname](args, chat_id)
 
 
-async def handle_inline_query(update: Update, context: CallbackContext):
-    results = []
+async def handle_inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.inline_query.query
-    if query != "":
-        items = google_search(query)
-        if isinstance(items, list):
-            # response = bot.sendInlineResponse(
-            #     inline_query_id=inline_query_id, items=items
-            # )
-            for idx, item in enumerate(items):
-                photo_url = item["link"]
-                thumb_url = item["image"]["thumbnailLink"]
-                results.append(
-                    InlineQueryResultPhoto(
-                        id=str(idx),
-                        photo_url=photo_url,
-                        thumbnail_url=thumb_url,
-                    )
+    if not query:  # empty query should not be handled
+        return
+
+    results = []
+    items = google_search(query)
+    if isinstance(items, list):
+        # response = bot.sendInlineResponse(
+        #     inline_query_id=inline_query_id, items=items
+        # )
+        for idx, item in enumerate(items):
+            photo_url = item["link"]
+            thumb_url = item["image"]["thumbnailLink"]
+            results.append(
+                InlineQueryResultPhoto(
+                    id=str(idx),
+                    photo_url=photo_url,
+                    thumbnail_url=thumb_url,
                 )
+            )
     await update.inline_query.answer(results)
 
 
-async def cmd_img(update: Update, context: CallbackContext):
+async def cmd_img(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not context.args:
         await update.message.reply_text(text="No query provided")
         return
@@ -337,7 +338,7 @@ async def cmd_img(update: Update, context: CallbackContext):
     url = items[0]["link"]
     await update.message.reply_photo(url)
 
-async def cmd_puppu(update: Update, context: CallbackContext):
+async def cmd_puppu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = ""
     if context.args:
         query = " ".join(context.args)
@@ -353,7 +354,7 @@ async def cmd_puppu(update: Update, context: CallbackContext):
     await update.message.reply_text(text.text)
 
 
-async def cmd_inspis(update: Update, context: CallbackContext):
+async def cmd_inspis(update: Update, context: ContextTypes.DEFAULT_TYPE):
     url = "https://inspirobot.me/api?generate=true"
     headers = {
         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5)"
@@ -366,7 +367,7 @@ async def cmd_inspis(update: Update, context: CallbackContext):
     await update.message.reply_photo(url)
 
 
-async def cmd_help(update: Update, context: CallbackContext):
+async def cmd_help(update: Update, context: ContextTypes.DEFAULT_TYPE):
     help_text = __doc__
     await update.message.reply_text(
         help_text,
@@ -389,7 +390,7 @@ def get_category_keyboard():
     return InlineKeyboardMarkup(keyboard)
 
 
-async def button_callback(update: Update, context: CallbackContext) -> None:
+async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Parses the CallbackQuery and updates the message text."""
     query = update.callback_query
     await query.answer()
@@ -462,7 +463,7 @@ async def get_updated_keyboard(selected):
     return InlineKeyboardMarkup(keyboard)
 
 
-async def cmd_subscribe(update: Update, context: CallbackContext):
+async def cmd_subscribe(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # chat_id = str(chat_id)
     # chat = Chat.query.get(chat_id)
     # if not chat:
@@ -487,7 +488,7 @@ async def cmd_subscribe(update: Update, context: CallbackContext):
     )
 
 
-async def cmd_unsubscribe(update: Update, context: CallbackContext):
+async def cmd_unsubscribe(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat_id = str(update.effective_chat.id)
     chat = Chat.query.get(chat_id)
     if chat:
@@ -533,7 +534,7 @@ def google_search(search_terms):
         return -2
 
 
-async def test_img(update: Update, context: CallbackContext):
+async def test_img(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = ""
     if context.args:
         query = " ".join(context.args)
@@ -545,7 +546,7 @@ async def test_img(update: Update, context: CallbackContext):
     await not_found(update, context)
 
 
-async def daily_limit(update: Update, context: CallbackContext):
+async def daily_limit(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_photo(
         random.choice(error_images),
         "You've reached the daily search limit of Google API :(",
@@ -559,7 +560,7 @@ async def daily_limit(update: Update, context: CallbackContext):
 # )
 
 
-async def not_found(update: Update, context: CallbackContext):
+async def not_found(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_photo(random.choice(not_found_images))
     # return bot.sendPhoto(
     #     chat_id=chat_id,
@@ -568,7 +569,7 @@ async def not_found(update: Update, context: CallbackContext):
     # )
 
 
-async def cmd_ask(update: Update, context: CallbackContext):
+async def cmd_ask(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat_id = str(update.message.chat_id)
 
     query = ""
@@ -608,7 +609,7 @@ async def cmd_ask(update: Update, context: CallbackContext):
         reset_conversation_history([chat_id])
 
 
-async def cmd_reset(update: Update, context: CallbackContext):
+async def cmd_reset(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat_id = str(update.message.chat_id)
     if chat_id not in settings.OPENAI_CHAT_IDS:
         # bot.sendMessage(
@@ -622,7 +623,7 @@ async def cmd_reset(update: Update, context: CallbackContext):
     await update.message.reply_text("GPT-4 chat history reset")
 
 
-async def logging_handler(update: Update, context: CallbackContext):
+async def logging_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     app.logger.info(f"Received message: {str(update)}")
 
 
