@@ -7,7 +7,7 @@ import traceback
 import openai
 import requests
 import wikipedia
-from openai import error
+from openai import RateLimitError, APIStatusError, APIError
 
 import riot_summoner_api
 import settings
@@ -33,13 +33,13 @@ class ChatBot:
             completion = openai.ChatCompletion.create(
                 model="gpt-4", messages=self.messages
             )
-        except error.RateLimitError:
+        except RateLimitError:
             traceback.print_exc()
             return "OpenAI Rate Limit Error", 0
-        except error.InvalidRequestError:
-            traceback.print_exc()
-            return "Token limit reached", 0
-        except error.APIError as e:
+        except APIStatusError as e:
+            print(str(e))
+            return "OpenAI returned APIStatusError"
+        except APIError as e:
             print(str(e))
             return "OpenAI returned APIError"
         # Uncomment this to print out token usage each time, e.g.
