@@ -1,23 +1,23 @@
 # -*- encoding: utf8 -*-
 
 """
-@klemmari\_bot _query_ — Select and send an image from Google image search results with the given query
+@klemmari\_bot _query_ \- Select and send an image from Google image search results with the given query
 
-/img _query_ — Post the first image from Google image search with the given query \("I'm Feeling Lucky"\)
+/img _query_ \- Post the first image from Google image search with the given query \("I'm Feeling Lucky"\)
 
-/puppu _input_ — Generate a "puppulause" from the given input
+/puppu _input_ \- Generate a "puppulause" from the given input
 
-/inspis — Generate a random inspirational image
+/inspis \- Generate a random inspirational image
 
-/ask — Ask questions or talk to VavaBot
+/ask \- Ask questions or talk to VavaBot
 
-/reset — Reset VavaBot conversation history
+/reset \- Reset VavaBot conversation history
 
-/subscribe — Subscribe chat to bargain alerts
+/subscribe \- Subscribe chat to bargain alerts
 
-/unsubscribe — Unsubscribe chat from bargain alerts
+/unsubscribe \- Unsubscribe chat from bargain alerts
 
-/help — Show this help message
+/help \- Show this help message
 """  # noqa
 
 import asyncio
@@ -31,7 +31,6 @@ from logging.config import dictConfig
 import jwt
 import requests
 import sentry_sdk
-import telegram
 from bs4 import BeautifulSoup
 from flask import Flask, request, Response
 from sentry_sdk.integrations.flask import FlaskIntegration
@@ -52,7 +51,7 @@ from telegram.ext import (
 
 import chatbot
 import settings
-from chats import Chat, db
+from tg_builder import TGBuilder
 
 
 @dataclass
@@ -84,15 +83,6 @@ dictConfig(
 
 app = Flask(__name__)
 
-# DB Setup
-conn_str = settings.DATABASE_URL
-app.config["SQLALCHEMY_DATABASE_URI"] = conn_str
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-
-db.init_app(app)
-app.app_context().push()
-db.create_all()
-
 # Sentry setup
 sentry_sdk.init(
     dsn=settings.SENTRY_DSN,
@@ -103,7 +93,7 @@ sentry_sdk.init(
     traces_sample_rate=1.0,
 )
 
-bot = Application.builder().token(settings.TELEGRAM_TOKEN).build()
+bot = TGBuilder().token(settings.TELEGRAM_TOKEN).build()
 
 error_images = [
     "https://github.com/klemmari1/tg_vava_bot/raw/master/images/error.png",
@@ -126,7 +116,7 @@ CATEGORIES = {
     6: "Autot ja ajoneuvot",
     7: "Ruoka ja juoma",
     8: "Kirjat ja lehdet",
-    9: "Peliaiheiset tuotteet",
+    9: "Pelit ja peliaiheiset tuotteet",
     10: "Tietokoneen komponentit",
     11: "Muut",
 }
@@ -215,7 +205,9 @@ async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE) -> N
 
 
 async def send_message_to_chat(chat_id: int, text: str) -> None:
-    await telegram.Bot(settings.TELEGRAM_TOKEN).send_message(
+    temp_bot = TGBuilder().token(settings.TELEGRAM_TOKEN).build()
+
+    await temp_bot.updater.bot.send_message(
         chat_id=chat_id,
         text=text,
         disable_web_page_preview=True,
@@ -238,24 +230,23 @@ def send_alert():
     if not auth_successful:
         return Response("Access denied!", 401)
 
-    message = request.data.decode("utf-8")
+    message = request.form.get("message")
+    chat_ids = request.form.getlist("chat_ids")
 
-    chats = Chat.query.all()
-    chat_ids = [chat.id for chat in chats]
+    # chats = Chat.query.all()
+    # chat_ids = [chat.id for chat in chats]
     for chat_id in chat_ids:
         # response = bot.sendMessage(
         #     chat_id=chat_id,
         #     text=message,
         #     disable_web_page_preview=True,
         # )
-        # if response:
-        #     app.logger.info("SEND ALERT:")
-        #     app.logger.info(response.status_code)
-        #     app.logger.info(response.content)
+        app.logger.info("SEND ALERT:")
+        app.logger.info(chat_id)
+        app.logger.info(message)
         asyncio.new_event_loop().run_until_complete(
             send_message_to_chat(int(chat_id), message)
         )
-
     return "OK"
 
 
@@ -363,8 +354,8 @@ async def cmd_inspis(update: Update, context: ContextTypes.DEFAULT_TYPE):
     url = "https://inspirobot.me/api?generate=true"
     headers = {
         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5)"
-                      "AppleWebKit/537.36 (KHTML, like Gecko)"
-                      "Chrome/50.0.2661.102 Safari/537.36"
+        "AppleWebKit/537.36 (KHTML, like Gecko)"
+        "Chrome/50.0.2661.102 Safari/537.36"
     }
     response = requests.get(url, headers=headers, timeout=settings.REQUEST_TIMEOUT)
     url = response.content.decode("utf-8")
@@ -411,7 +402,7 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         if user_id in SELECTED_CATEGORIES and SELECTED_CATEGORIES[user_id]:
             for idx in SELECTED_CATEGORIES[user_id]:
                 category = CATEGORIES[int(idx)]
-                selected_categories_text += f"*— {category}*\n"
+                selected_categories_text += f"*\- {category}*\n"
                 selected_categories.append(category)
 
             if SELECTED_CATEGORIES[user_id]:
@@ -494,19 +485,26 @@ async def cmd_subscribe(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 
-async def cmd_unsubscribe(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    chat_id = str(update.effective_chat.id)
-    chat = Chat.query.get(chat_id)
-    if chat:
-        chat.unsubscribe()
-        text = "Unsubscribed from bargain alerts!"
-    else:
-        text = "Chat is not subscribed to bargain alerts!"
+async def cmd_unsubscribe(update: Update, context: CallbackContext):
+    chat_id = str(update.message.chat_id)
+    data = {
+        "chat-id": chat_id,
+        "sub-type": "unsubscribe",
+    }
+    response = requests.post(
+        f"{settings.TARJOUSHAUKKA_URL}/chat",
+        data=data,
+    )
+    # chat = Chat.query.get(chat_id)
+
     # bot.sendMessage(
     #     chat_id=chat_id,
     #     text=text,
     # )
-    await update.message.reply_text(text)
+    await update.message.reply_text(
+        f'*{response.json()["status"]}*',
+        parse_mode="MarkdownV2",
+    )
 
 
 def google_search(search_terms):
@@ -515,16 +513,16 @@ def google_search(search_terms):
         searchType = "image"
         gl = "fi"
         url = (
-                "https://www.googleapis.com/customsearch/v1?q="
-                + search_terms
-                + "&key="
-                + settings.GOOGLE_SEARCH_KEY
-                + "&cx="
-                + settings.GOOGLE_SEARCH_CX
-                + "&searchType="
-                + searchType
-                + "&gl="
-                + gl
+            "https://www.googleapis.com/customsearch/v1?q="
+            + search_terms
+            + "&key="
+            + settings.GOOGLE_SEARCH_KEY
+            + "&cx="
+            + settings.GOOGLE_SEARCH_CX
+            + "&searchType="
+            + searchType
+            + "&gl="
+            + gl
         )
         contents = requests.get(url, timeout=settings.REQUEST_TIMEOUT).text
         json_response = json.loads(contents)
@@ -651,8 +649,15 @@ bot.add_handler(CallbackQueryHandler(button_callback))
 
 bot.add_error_handler(error_handler)
 
-threading.Thread(
-    target=lambda: app.run(host="0.0.0.0", port=settings.PORT, debug=True, use_reloader=False)
-).start()
+app_thread = threading.Thread(
+    target=lambda: app.run(
+        host="0.0.0.0", port=settings.PORT, debug=True, use_reloader=False
+    )
+)
+app_thread.start()
+
 
 bot.run_polling()
+
+# Stop the Flask app thread when the bot stops
+app_thread.join()
