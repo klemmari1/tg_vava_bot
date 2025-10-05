@@ -18,8 +18,7 @@ POOL_TIMEOUT = 10
 class TGRequest(HTTPXRequest):
     def __init__(
         self,
-        connection_pool_size: int = 1,
-        proxy_url: Optional[Union[str, httpx.Proxy, httpx.URL]] = None,
+        connection_pool_size: int = 256,
         read_timeout: Optional[float] = 5.0,
         write_timeout: Optional[float] = 5.0,
         connect_timeout: Optional[float] = 5.0,
@@ -31,7 +30,6 @@ class TGRequest(HTTPXRequest):
     ):
         super().__init__(
             connection_pool_size,
-            proxy_url,
             read_timeout,
             write_timeout,
             connect_timeout,
