@@ -485,7 +485,7 @@ async def cmd_subscribe(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 
-async def cmd_unsubscribe(update: Update, context: CallbackContext):
+async def cmd_unsubscribe(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat_id = str(update.message.chat_id)
     data = {
         "chat-id": chat_id,
