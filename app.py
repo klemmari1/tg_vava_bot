@@ -233,6 +233,33 @@ def send_alert():
     message = request.form.get("message")
     chat_ids = request.form.getlist("chat_ids")
 
+    # Telegram message limit is 4096 characters
+    MAX_MESSAGE_LENGTH = 4096
+    ELLIPSIS = "\n...\n"
+
+    # Handle message length
+    if len(message) > MAX_MESSAGE_LENGTH:
+        # Split message into lines
+        lines = message.split('\n')
+
+        # Extract footer (last 3 rows)
+        footer_lines = lines[-3:] if len(lines) >= 3 else lines
+        footer = '\n'.join(footer_lines)
+
+        # Calculate available space for main content
+        available_space = MAX_MESSAGE_LENGTH - len(footer) - len(ELLIPSIS) - 10  # 10 char safety margin
+
+        # Get main content (everything except footer)
+        main_lines = lines[:-3] if len(lines) >= 3 else []
+        main_content = '\n'.join(main_lines)
+
+        # Clip main content if needed
+        if len(main_content) > available_space:
+            main_content = main_content[:available_space]
+
+        # Reconstruct message with ellipsis
+        message = main_content + ELLIPSIS + footer
+
     # chats = Chat.query.all()
     # chat_ids = [chat.id for chat in chats]
     for chat_id in chat_ids:
