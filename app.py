@@ -235,7 +235,7 @@ def send_alert():
 
     # Telegram message limit is 4096 characters
     MAX_MESSAGE_LENGTH = 4096
-    ELLIPSIS = "\n...\n"
+    ELLIPSIS = "\n\n...\n\n"
 
     # Handle message length
     if len(message) > MAX_MESSAGE_LENGTH:
