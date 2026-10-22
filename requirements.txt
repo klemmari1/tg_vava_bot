@@ -22,7 +22,7 @@ blinker==1.9.0
     #   sentry-sdk
 build==1.3.0
     # via pip-tools
-certifi==2025.8.3
+certifi==2026.10.19
     # via
     #   httpcore
     #   httpx
